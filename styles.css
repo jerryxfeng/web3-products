@@ -1,56 +1,73 @@
+/* Importing Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Libre+Caslon+Condensed:wght@400;600&display=swap');
+
+/* Global Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Figtree', sans-serif;
     background-color: #ffffff;
     margin: 0;
     padding: 0;
     color: #000000;
 }
 
+/* Header Section */
 .main-header {
     background-color: #ffffff;
     border-bottom: 1px solid #000000;
-    padding: 20px 0;
+    padding: 30px 20px;
     text-align: center;
 }
 
 .header-content {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .main-header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
+    font-family: 'Figtree', sans-serif;
+    font-size: 2em;
+    margin: 0;
     color: #000000;
     font-weight: 600;
 }
 
 .main-header p {
+    font-family: 'Figtree', sans-serif;
     font-size: 1.2em;
-    margin-bottom: 20px;
+    margin: 10px 0;
     color: #000000;
     font-weight: 300;
 }
 
 .main-header button {
-    background-color: #000000;
+    background-color: #EA3323;
+    /* Crimson */
     color: #ffffff;
     border: none;
     border-radius: 4px;
-    padding: 10px 20px;
-    font-size: 1em;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    font-weight: 600;
+    /* Semi-Bold */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 15px;
 }
 
 .main-header button:hover {
-    background-color: #333333;
+    background-color: #000000;
+    /* Black background on hover */
+    color: #ffffff;
+    /* White text on hover */
 }
 
+/* Container and Sidebar */
 .container {
     display: flex;
     height: calc(100vh - 100px);
-    /* Adjusted to account for the header height */
     margin-top: 0;
 }
 
@@ -65,10 +82,11 @@ body {
 }
 
 .sidebar h3 {
+    font-family: 'Figtree', sans-serif;
     font-size: 1.1em;
     margin-bottom: 10px;
     color: #000000;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .sort-section {
@@ -83,6 +101,7 @@ body {
     background-color: #ffffff;
     font-size: 1em;
     color: #000000;
+    font-family: 'Figtree', sans-serif;
 }
 
 .filter-section {
@@ -99,11 +118,13 @@ body {
 }
 
 .filter-section label {
+    font-family: 'Figtree', sans-serif;
     font-size: 1em;
     cursor: pointer;
     color: #000000;
 }
 
+/* Main Content */
 .main-content {
     flex-grow: 1;
     padding: 20px;
@@ -118,26 +139,29 @@ body {
     gap: 15px;
 }
 
+/* Product List Items */
 .product-list-item {
     display: flex;
     align-items: center;
     padding: 10px 15px;
     background-color: #ffffff;
-    border: 1px solid #000000;
+    border: 1px solid #ffffff;
+    /* White border by default to prevent movement on hover */
     border-radius: 8px;
     gap: 15px;
     cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
+    transition: border-color 0.3s ease;
 }
 
 .product-list-item:hover {
-    background-color: #cccccc;
     border-color: #000000;
+    /* Black border on hover */
 }
 
 .product-logo {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    /* Increased size for product logos */
+    height: 70px;
     object-fit: contain;
     border-radius: 5px;
 }
@@ -150,17 +174,21 @@ body {
 }
 
 .product-info .product-name {
-    font-weight: bold;
+    font-family: 'Figtree', sans-serif;
+    font-weight: 600;
     font-size: 1.1em;
     color: #000000;
 }
 
 .product-info .product-description {
+    font-family: 'Figtree', sans-serif;
+    font-size: 1em;
     color: #000000;
     margin-left: 5px;
 }
 
 .product-info .product-meta {
+    font-family: 'Figtree', sans-serif;
     font-size: 0.9em;
     color: #000000;
     margin-top: 5px;
@@ -176,20 +204,25 @@ body {
     cursor: pointer;
 }
 
+.product-info .clickable-tag,
 .product-info .product-meta .clickable-tag {
     margin-left: 0;
-    /* Align the clickable tag with the product name */
     text-decoration: underline;
     cursor: pointer;
+    font-size: 0.9em;
+    color: #EA3323;
+    /* Crimson color for @usernames and product websites */
 }
 
 .product-info .product-meta .clickable-tag:hover {
-    color: #333333;
+    color: #cc2b1f;
+    /* Slightly darker Crimson on hover */
 }
 
 .twitter-icon {
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    /* Smaller Twitter icon */
+    height: 12px;
     margin-left: 8px;
     vertical-align: middle;
     cursor: pointer;
@@ -204,6 +237,7 @@ body {
     display: none;
 }
 
+/* Responsive Styles */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;

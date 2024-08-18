@@ -116,14 +116,22 @@ function displayProducts(products) {
     if (product.founderTwitter) {
       const username = extractTwitterUsername(product.founderTwitter);
       if (username) {
+        const builtByText = document.createElement("span");
+        builtByText.textContent = ", built by "; // Black text, not underlined
+
         const founderLink = document.createElement("span");
         founderLink.classList.add("clickable-tag");
-        founderLink.textContent = ` - built by @${username}`;
+        founderLink.textContent = `@${username}`; // Crimson and underlined
+
+        // Append both parts to the nameAndDescription
+        nameAndDescription.appendChild(builtByText);
+        nameAndDescription.appendChild(founderLink);
+
+        // Add the click event listener to the @username link
         founderLink.addEventListener("click", (e) => {
           e.stopPropagation();
           window.open(product.founderTwitter, "_blank");
         });
-        nameAndDescription.appendChild(founderLink);
       }
     }
 
