@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web3 Products Directory</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-content">
+        <h1>web3 product directory</h1>
+        <p>discover the best tools and products in web3</p>
+        <button id="submitButton">submit your product</button>
+      </div>
+    </header>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sort-section">
+          <h3>Sort By</h3>
+          <select id="sortFilter">
+            <option value="alphabetical">alphabetical (a-z)</option>
+            <option value="recent">recently added</option>
+          </select>
+        </div>
+        <div class="filter-section">
+          <h3>Category</h3>
+          <div id="categoryFilter"></div>
+        </div>
+        <div class="filter-section">
+          <h3>Blockchain</h3>
+          <div id="blockchainFilter"></div>
+        </div>
+      </aside>
+      <main class="main-content">
+        <div id="product-container"></div>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

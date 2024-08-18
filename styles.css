@@ -1,0 +1,221 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    color: #000000;
+}
+
+.main-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #000000;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.header-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.main-header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #000000;
+    font-weight: 600;
+}
+
+.main-header p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #000000;
+    font-weight: 300;
+}
+
+.main-header button {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.main-header button:hover {
+    background-color: #333333;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 100px);
+    /* Adjusted to account for the header height */
+    margin-top: 0;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px;
+    box-shadow: none;
+    overflow-y: auto;
+    border-right: 1px solid #000000;
+}
+
+.sidebar h3 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.sort-section {
+    margin-bottom: 30px;
+}
+
+.sort-section select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    background-color: #ffffff;
+    font-size: 1em;
+    color: #000000;
+}
+
+.filter-section {
+    margin-bottom: 30px;
+}
+
+.filter-section div {
+    margin-bottom: 10px;
+}
+
+.filter-section input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #000000;
+}
+
+.filter-section label {
+    font-size: 1em;
+    cursor: pointer;
+    color: #000000;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    overflow-y: auto;
+    margin-top: 0;
+}
+
+#product-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.product-list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    gap: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.product-list-item:hover {
+    background-color: #cccccc;
+    border-color: #000000;
+}
+
+.product-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.product-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.product-info .product-name {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #000000;
+}
+
+.product-info .product-description {
+    color: #000000;
+    margin-left: 5px;
+}
+
+.product-info .product-meta {
+    font-size: 0.9em;
+    color: #000000;
+    margin-top: 5px;
+}
+
+.product-info .product-meta .tag {
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    padding: 2px 6px;
+    margin-right: 5px;
+    color: #000000;
+    cursor: pointer;
+}
+
+.product-info .product-meta .clickable-tag {
+    margin-left: 0;
+    /* Align the clickable tag with the product name */
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.product-info .product-meta .clickable-tag:hover {
+    color: #333333;
+}
+
+.twitter-icon {
+    width: 15px;
+    height: 15px;
+    margin-left: 8px;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.twitter-icon:hover {
+    opacity: 0.7;
+}
+
+.product-links {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+}
