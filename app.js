@@ -117,39 +117,46 @@ const createProductElement = (product) => {
     productDiv.appendChild(logo);
   }
 
-  // DeGods Project Badge
-  if (product.isDeGodsProject) {
-    const deGodsBadge = document.createElement("img");
-    deGodsBadge.src = "degods.png";
-    deGodsBadge.alt = "DeGods Project";
-    deGodsBadge.classList.add("degods-badge");
-    productDiv.appendChild(deGodsBadge);
-  }
-
   // Product Info
   const infoDiv = document.createElement("div");
   infoDiv.classList.add("product-info");
 
   // Name and Description
   const nameAndDescription = document.createElement("div");
-  nameAndDescription.innerHTML = `
-      <span class="product-name">${product.productName}</span>
-      <span class="product-description"> – ${product.productDescription}</span>
-  `;
+  nameAndDescription.classList.add("name-and-description");
+
+  const nameSpan = document.createElement("span");
+  nameSpan.classList.add("product-name");
+  nameSpan.textContent = product.productName;
+
+  nameAndDescription.appendChild(nameSpan);
+
+  // DeGods Project Badge
+  if (product.isDeGodsProject) {
+    const deGodsBadge = document.createElement("img");
+    deGodsBadge.src = "degods.png";
+    deGodsBadge.alt = "DeGods Project";
+    deGodsBadge.classList.add("degods-badge");
+    nameAndDescription.appendChild(deGodsBadge);
+  }
+
+  const descriptionSpan = document.createElement("span");
+  descriptionSpan.classList.add("product-description");
+  descriptionSpan.textContent = ` – ${product.productDescription}`;
+  nameAndDescription.appendChild(descriptionSpan);
 
   // Founder Twitter
   if (product.founderTwitter) {
     const username = extractTwitterUsername(product.founderTwitter);
     if (username) {
-      nameAndDescription.innerHTML += `
-              <span>, built by </span>
-              <span class="clickable-tag">@${username}</span>
-          `;
-      const founderLink = nameAndDescription.querySelector(".clickable-tag");
+      const founderSpan = document.createElement("span");
+      founderSpan.innerHTML = `, built by <span class="clickable-tag">@${username}</span>`;
+      const founderLink = founderSpan.querySelector(".clickable-tag");
       founderLink.addEventListener("click", (e) => {
         e.stopPropagation();
         window.open(product.founderTwitter, "_blank");
       });
+      nameAndDescription.appendChild(founderSpan);
     }
   }
 
