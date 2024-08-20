@@ -3,44 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web3 Products Directory</title>
+    <meta
+      name="description"
+      content="Discover the best products and tools in web3 - A comprehensive directory of web3 products and services."
+    />
+    <title>Web3 Product Directory</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="sydney.jpg" type="image/x-icon" />
   </head>
-
   <body>
     <header class="main-header">
       <div class="header-content">
         <h1>web3 product directory</h1>
         <p>discover the best products & tools in web3</p>
-        <button id="submitButton">submit your product</button>
+        <button id="submitButton" aria-label="Submit your product">
+          submit your product
+        </button>
       </div>
     </header>
     <div class="container">
       <aside class="sidebar">
-        <div class="sort-section">
-          <h3>Sort By</h3>
-          <select id="sortFilter">
-            <option value="alphabetical">alphabetical (a-z)</option>
-            <option value="recent">recently added</option>
-          </select>
-        </div>
-        <div class="filter-section">
-          <h3>Category</h3>
-          <div id="categoryFilter"></div>
-        </div>
-        <div class="filter-section">
-          <h3>Blockchain</h3>
-          <div id="blockchainFilter"></div>
-        </div>
+        <nav>
+          <div class="sort-section">
+            <h3>Sort By</h3>
+            <select id="sortFilter" aria-label="Sort products">
+              <option value="alphabetical">alphabetical (a-z)</option>
+              <option value="recent">recently added</option>
+            </select>
+          </div>
+          <div class="filter-section">
+            <h3>Category</h3>
+            <div id="categoryFilter" aria-label="Filter by category"></div>
+          </div>
+          <div class="filter-section">
+            <h3>Blockchain</h3>
+            <div id="blockchainFilter" aria-label="Filter by blockchain"></div>
+          </div>
+        </nav>
       </aside>
       <main class="main-content">
         <div id="product-container"></div>
       </main>
     </div>
+    <noscript>
+      <p>
+        This application requires JavaScript to function properly. Please enable
+        JavaScript in your browser settings.
+      </p>
+    </noscript>
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,10 +1,31 @@
-// URL of the published Google Sheet CSV
-const csvUrl =
+// Constants
+const CSV_URL =
   "https://docs.google.com/spreadsheets/d/1YkJ7VEeP1RT4PGS2D_X9S4i0L9FT_KLeC-UKVVv5nbo/pub?output=csv";
+const SUBMIT_FORM_URL = "https://tally.so/r/wgLJAN";
+const FALLBACK_IMAGE = "sydney.jpg";
+const APPROVED_COLUMN_INDEX = 12;
+const DEBOUNCE_DELAY = 300; // milliseconds
 
 let allProducts = [];
 
-// Function to manually parse CSV rows into an array of columns
+// Utility Functions
+const debounce = (func, delay) => {
+  let debounceTimer;
+  return function () {
+    const context = this;
+    const args = arguments;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => func.apply(context, args), delay);
+  };
+};
+
+const sanitizeHTML = (str) => {
+  const temp = document.createElement("div");
+  temp.textContent = str;
+  return temp.innerHTML;
+};
+
+// CSV Parsing Functions
 function parseCSVRow(row) {
   const result = [];
   let inQuotes = false;
@@ -21,36 +42,50 @@ function parseCSVRow(row) {
     }
   }
 
-  result.push(value.trim()); // Add the last value
+  result.push(value.trim());
   return result;
 }
 
-// Function to parse CSV data properly
 function parseCSV(data) {
   const rows = data.split("\n").slice(1); // Skip header row
   return rows
     .map((row) => {
       const cols = parseCSVRow(row);
-      if (cols) {
+      if (cols && cols[APPROVED_COLUMN_INDEX].toLowerCase() === "yes") {
         return {
           submissionId: cols[0],
-          submittedAt: new Date(cols[2]), // Parse submitted at time as a date
-          productName: cols[3] ? cols[3].replace(/^"|"$/g, "") : "",
-          productDescription: cols[4] ? cols[4].replace(/^"|"$/g, "") : "",
+          respondentId: cols[1],
+          submittedAt: new Date(cols[2]),
+          productName: sanitizeHTML(
+            cols[3] ? cols[3].replace(/^"|"$/g, "") : ""
+          ),
+          productDescription: sanitizeHTML(
+            cols[4] ? cols[4].replace(/^"|"$/g, "") : ""
+          ),
           productCategory: cols[5]
-            ? cols[5].split(",").map((tag) => tag.trim().replace(/^"|"$/g, ""))
+            ? cols[5]
+                .split(",")
+                .map((tag) => sanitizeHTML(tag.trim().replace(/^"|"$/g, "")))
             : [],
           productBlockchain: cols[6]
             ? cols[6]
                 .split(",")
-                .map((chain) => chain.trim().replace(/^"|"$/g, ""))
+                .map((chain) =>
+                  sanitizeHTML(chain.trim().replace(/^"|"$/g, ""))
+                )
             : [],
-          productWebsite: cols[7] ? cols[7].replace(/^"|"$/g, "") : "",
-          productTwitter: cols[8] ? cols[8].replace(/^"|"$/g, "") : "",
-          founderTwitter: cols[9] ? cols[9].replace(/^"|"$/g, "") : "",
-          productLogo: cols[10]
-            ? encodeURI(cols[10].replace(/^"|"$/g, ""))
-            : "",
+          productWebsite: sanitizeHTML(
+            cols[7] ? cols[7].replace(/^"|"$/g, "") : ""
+          ),
+          productTwitter: sanitizeHTML(
+            cols[8] ? cols[8].replace(/^"|"$/g, "") : ""
+          ),
+          founderTwitter: sanitizeHTML(
+            cols[11] ? cols[11].replace(/^"|"$/g, "") : ""
+          ),
+          productLogo: encodeURI(
+            cols[10] ? cols[10].replace(/^"|"$/g, "") : ""
+          ),
         };
       }
       return null;
@@ -58,129 +93,123 @@ function parseCSV(data) {
     .filter((product) => product !== null);
 }
 
-// Function to extract the Twitter username from a URL
+// Display Functions
 function extractTwitterUsername(url) {
-  if (!url) return null;
-  const urlObj = new URL(url);
-  return urlObj.pathname.split("/").filter(Boolean)[0]; // Get the username part after the last '/'
+  if (!url) {
+    console.warn("Missing Twitter URL.");
+    return null;
+  }
+
+  try {
+    const urlObj = new URL(url);
+    return urlObj.pathname.split("/").filter(Boolean)[0];
+  } catch (error) {
+    console.error(`Invalid URL: ${url}`, error);
+    return null;
+  }
 }
 
-// Function to remove 'https://' and trailing slash from URLs for display
 function cleanUrl(url) {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
 
-// Function to display products on the page
+function createProductElement(product) {
+  const productDiv = document.createElement("div");
+  productDiv.classList.add("product-list-item");
+  productDiv.addEventListener("click", () => {
+    window.open(product.productWebsite, "_blank");
+  });
+
+  // Product Logo
+  if (product.productLogo) {
+    const logo = document.createElement("img");
+    logo.src = product.productLogo;
+    logo.loading = "lazy";
+    logo.onerror = () => {
+      logo.src = FALLBACK_IMAGE;
+    };
+    logo.alt = `${product.productName} logo`;
+    logo.classList.add("product-logo");
+    productDiv.appendChild(logo);
+  }
+
+  // Product Info
+  const infoDiv = document.createElement("div");
+  infoDiv.classList.add("product-info");
+
+  // Name and Description
+  const nameAndDescription = document.createElement("div");
+  nameAndDescription.innerHTML = `
+    <span class="product-name">${product.productName}</span>
+    <span class="product-description"> – ${product.productDescription}</span>
+  `;
+
+  // Founder Twitter
+  if (product.founderTwitter) {
+    const username = extractTwitterUsername(product.founderTwitter);
+    if (username) {
+      nameAndDescription.innerHTML += `
+        <span>, built by </span>
+        <span class="clickable-tag">@${username}</span>
+      `;
+      const founderLink = nameAndDescription.querySelector(".clickable-tag");
+      founderLink.addEventListener("click", (e) => {
+        e.stopPropagation();
+        window.open(product.founderTwitter, "_blank");
+      });
+    }
+  }
+
+  infoDiv.appendChild(nameAndDescription);
+
+  // Categories and Blockchains
+  const metaDiv = document.createElement("div");
+  metaDiv.classList.add("product-meta");
+  metaDiv.textContent = `${product.productCategory.join(" · ")} · ${
+    product.productBlockchain.length > 1
+      ? "multichain"
+      : product.productBlockchain.join(", ")
+  }`;
+  infoDiv.appendChild(metaDiv);
+
+  // Website and Twitter
+  const websiteAndTwitterDiv = document.createElement("div");
+  websiteAndTwitterDiv.classList.add("product-meta");
+  websiteAndTwitterDiv.innerHTML = `
+    <a href="${
+      product.productWebsite
+    }" class="clickable-tag" target="_blank">${cleanUrl(
+    product.productWebsite
+  )}</a>
+  `;
+
+  if (product.productTwitter) {
+    const twitterIcon = document.createElement("img");
+    twitterIcon.src = "twitter.svg";
+    twitterIcon.alt = "Twitter";
+    twitterIcon.classList.add("twitter-icon");
+    twitterIcon.addEventListener("click", (e) => {
+      e.stopPropagation();
+      window.open(product.productTwitter, "_blank");
+    });
+    websiteAndTwitterDiv.appendChild(twitterIcon);
+  }
+
+  infoDiv.appendChild(websiteAndTwitterDiv);
+  productDiv.appendChild(infoDiv);
+
+  return productDiv;
+}
+
 function displayProducts(products) {
   const container = document.getElementById("product-container");
-  container.innerHTML = ""; // Clear previous products
+  container.innerHTML = "";
   products.forEach((product) => {
-    const productDiv = document.createElement("div");
-    productDiv.classList.add("product-list-item");
-
-    // Open product website on click
-    productDiv.addEventListener("click", () => {
-      window.open(product.productWebsite, "_blank");
-    });
-
-    // Product Logo
-    if (product.productLogo) {
-      const logo = document.createElement("img");
-      logo.src = product.productLogo;
-      logo.onerror = () => {
-        logo.src = "sydney.jpg"; // Fallback image
-      };
-      logo.alt = `${product.productName} logo`;
-      logo.classList.add("product-logo");
-      productDiv.appendChild(logo);
-    }
-
-    // Product Info
-    const infoDiv = document.createElement("div");
-    infoDiv.classList.add("product-info");
-
-    // Name and Description in one line
-    const nameAndDescription = document.createElement("div");
-    const name = document.createElement("span");
-    name.textContent = product.productName;
-    name.classList.add("product-name");
-
-    const description = document.createElement("span");
-    description.textContent = ` – ${product.productDescription}`;
-    description.classList.add("product-description");
-
-    nameAndDescription.appendChild(name);
-    nameAndDescription.appendChild(description);
-
-    // Add Founder Twitter if available
-    if (product.founderTwitter) {
-      const username = extractTwitterUsername(product.founderTwitter);
-      if (username) {
-        const builtByText = document.createElement("span");
-        builtByText.textContent = ", built by "; // Black text, not underlined
-
-        const founderLink = document.createElement("span");
-        founderLink.classList.add("clickable-tag");
-        founderLink.textContent = `@${username}`; // Crimson and underlined
-
-        // Append both parts to the nameAndDescription
-        nameAndDescription.appendChild(builtByText);
-        nameAndDescription.appendChild(founderLink);
-
-        // Add the click event listener to the @username link
-        founderLink.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.open(product.founderTwitter, "_blank");
-        });
-      }
-    }
-
-    infoDiv.appendChild(nameAndDescription);
-
-    // Product Categories and Blockchains
-    const metaDiv = document.createElement("div");
-    metaDiv.classList.add("product-meta");
-
-    const categories = product.productCategory.join(" · ");
-    const blockchains =
-      product.productBlockchain.length > 1
-        ? "multichain"
-        : product.productBlockchain.join(", ");
-
-    metaDiv.textContent = `${categories} · ${blockchains}`;
-    infoDiv.appendChild(metaDiv);
-
-    // Product Website and Twitter Icon
-    const websiteAndTwitterDiv = document.createElement("div");
-    websiteAndTwitterDiv.classList.add("product-meta");
-
-    const websiteLink = document.createElement("a");
-    websiteLink.href = product.productWebsite;
-    websiteLink.textContent = cleanUrl(product.productWebsite);
-    websiteLink.classList.add("clickable-tag");
-    websiteLink.target = "_blank";
-
-    websiteAndTwitterDiv.appendChild(websiteLink);
-
-    if (product.productTwitter) {
-      const twitterIcon = document.createElement("img");
-      twitterIcon.src = "twitter.svg";
-      twitterIcon.alt = "Twitter";
-      twitterIcon.classList.add("twitter-icon");
-      twitterIcon.addEventListener("click", (e) => {
-        e.stopPropagation();
-        window.open(product.productTwitter, "_blank");
-      });
-      websiteAndTwitterDiv.appendChild(twitterIcon);
-    }
-
-    infoDiv.appendChild(websiteAndTwitterDiv);
-    productDiv.appendChild(infoDiv);
-    container.appendChild(productDiv);
+    container.appendChild(createProductElement(product));
   });
 }
 
-// Function to populate filter options with checkboxes
+// Filter and Sort Functions
 function populateFilterOptions(products) {
   const categoryFilter = document.getElementById("categoryFilter");
   const blockchainFilter = document.getElementById("blockchainFilter");
@@ -195,44 +224,32 @@ function populateFilterOptions(products) {
     );
   });
 
-  categories.forEach((category) => {
+  function createCheckbox(value, parentElement, className) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.value = category;
-    checkbox.id = `category-${category}`;
-    checkbox.classList.add("category-checkbox");
+    checkbox.value = value;
+    checkbox.id = `${className}-${value}`;
+    checkbox.classList.add(className);
 
     const label = document.createElement("label");
-    label.htmlFor = `category-${category}`;
-    label.textContent = category;
+    label.htmlFor = `${className}-${value}`;
+    label.textContent = value;
 
     const container = document.createElement("div");
     container.appendChild(checkbox);
     container.appendChild(label);
 
-    categoryFilter.appendChild(container);
-  });
+    parentElement.appendChild(container);
+  }
 
-  blockchains.forEach((blockchain) => {
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = blockchain;
-    checkbox.id = `blockchain-${blockchain}`;
-    checkbox.classList.add("blockchain-checkbox");
-
-    const label = document.createElement("label");
-    label.htmlFor = `blockchain-${blockchain}`;
-    label.textContent = blockchain;
-
-    const container = document.createElement("div");
-    container.appendChild(checkbox);
-    container.appendChild(label);
-
-    blockchainFilter.appendChild(container);
-  });
+  categories.forEach((category) =>
+    createCheckbox(category, categoryFilter, "category-checkbox")
+  );
+  blockchains.forEach((blockchain) =>
+    createCheckbox(blockchain, blockchainFilter, "blockchain-checkbox")
+  );
 }
 
-// Function to apply filters and sorting
 function applyFiltersAndSorting() {
   const selectedCategories = Array.from(
     document.querySelectorAll(".category-checkbox:checked")
@@ -256,42 +273,45 @@ function applyFiltersAndSorting() {
     return categoryMatch && blockchainMatch;
   });
 
-  // Apply sorting
   if (sortBy === "alphabetical") {
-    filteredProducts = filteredProducts.sort((a, b) =>
-      a.productName.localeCompare(b.productName)
-    );
+    filteredProducts.sort((a, b) => a.productName.localeCompare(b.productName));
   } else if (sortBy === "recent") {
-    filteredProducts = filteredProducts.sort(
-      (a, b) => b.submittedAt - a.submittedAt
-    );
+    filteredProducts.sort((a, b) => b.submittedAt - a.submittedAt);
   }
 
   displayProducts(filteredProducts);
 }
 
-// Event listener for the "Submit" button
+// Event Listeners
 document.getElementById("submitButton").addEventListener("click", () => {
-  window.open("https://tally.so/r/wgLJAN", "_blank");
+  window.open(SUBMIT_FORM_URL, "_blank");
 });
 
-// Fetch the CSV data and display products
-fetch(csvUrl)
-  .then((response) => response.text())
-  .then((data) => {
-    allProducts = parseCSV(data);
-    populateFilterOptions(allProducts);
-    applyFiltersAndSorting(); // Display products after sorting
-  })
-  .catch((error) => console.error("Error fetching CSV data:", error));
-
-// Add event listeners to filters and sorting
 document
   .getElementById("categoryFilter")
-  .addEventListener("change", applyFiltersAndSorting);
+  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
 document
   .getElementById("blockchainFilter")
-  .addEventListener("change", applyFiltersAndSorting);
+  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
 document
   .getElementById("sortFilter")
-  .addEventListener("change", applyFiltersAndSorting);
+  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
+
+// Initialize
+async function init() {
+  try {
+    const response = await fetch(CSV_URL);
+    const data = await response.text();
+    allProducts = parseCSV(data);
+
+    // Log the total number of products loaded
+    console.log(`Total products loaded: ${allProducts.length}`);
+
+    populateFilterOptions(allProducts);
+    applyFiltersAndSorting();
+  } catch (error) {
+    console.error("Error fetching CSV data:", error);
+  }
+}
+
+init();

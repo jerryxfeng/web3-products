@@ -1,20 +1,39 @@
-/* Importing Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Libre+Caslon+Condensed:wght@400;600&display=swap');
+/* Variables */
+:root {
+    --font-primary: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    --color-background: #ffffff;
+    --color-text: #000000;
+    --color-accent: #EA3323;
+    --color-border: #000000;
+    --transition-speed: 0.3s;
+}
 
 /* Global Styles */
+html {
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
 body {
-    font-family: 'Figtree', sans-serif;
-    background-color: #ffffff;
+    font-family: var(--font-primary);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.5;
     margin: 0;
     padding: 0;
-    color: #000000;
 }
 
 /* Header Section */
 .main-header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #000000;
-    padding: 30px 20px;
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1.875rem 1.25rem;
     text-align: center;
 }
 
@@ -27,108 +46,97 @@ body {
 }
 
 .main-header h1 {
-    font-family: 'Figtree', sans-serif;
     font-size: 2em;
     margin: 0;
-    color: #000000;
     font-weight: 600;
 }
 
 .main-header p {
-    font-family: 'Figtree', sans-serif;
     font-size: 1.2em;
-    margin: 10px 0;
-    color: #000000;
+    margin: 0.625rem 0;
     font-weight: 300;
 }
 
 .main-header button {
-    background-color: #EA3323;
-    /* Crimson */
-    color: #ffffff;
+    background-color: var(--color-accent);
+    color: var(--color-background);
     border: none;
-    border-radius: 4px;
-    padding: 12px 24px;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1.5rem;
     font-size: 1.1em;
     font-weight: 600;
-    /* Semi-Bold */
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    margin-top: 15px;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    margin-top: 0.9375rem;
 }
 
-.main-header button:hover {
-    background-color: #000000;
-    /* Black background on hover */
-    color: #ffffff;
-    /* White text on hover */
+.main-header button:hover,
+.main-header button:focus {
+    background-color: var(--color-text);
+    color: var(--color-background);
 }
 
 /* Container and Sidebar */
 .container {
     display: flex;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 6.25rem);
     margin-top: 0;
 }
 
 .sidebar {
-    width: 250px;
-    background-color: #ffffff;
-    color: #000000;
-    padding: 20px;
+    width: 15.625rem;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    padding: 1.25rem;
     box-shadow: none;
     overflow-y: auto;
-    border-right: 1px solid #000000;
+    border-right: 1px solid var(--color-border);
 }
 
 .sidebar h3 {
-    font-family: 'Figtree', sans-serif;
     font-size: 1.1em;
-    margin-bottom: 10px;
-    color: #000000;
+    margin-bottom: 0.625rem;
     font-weight: 600;
 }
 
 .sort-section {
-    margin-bottom: 30px;
+    margin-bottom: 1.875rem;
 }
 
 .sort-section select {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #000000;
-    border-radius: 4px;
-    background-color: #ffffff;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    background-color: var(--color-background);
     font-size: 1em;
-    color: #000000;
-    font-family: 'Figtree', sans-serif;
+    color: var(--color-text);
+    font-family: var(--font-primary);
 }
 
 .filter-section {
-    margin-bottom: 30px;
+    margin-bottom: 1.875rem;
 }
 
 .filter-section div {
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
 }
 
 .filter-section input[type="checkbox"] {
-    margin-right: 10px;
-    accent-color: #000000;
+    margin-right: 0.625rem;
+    accent-color: var(--color-text);
 }
 
 .filter-section label {
-    font-family: 'Figtree', sans-serif;
     font-size: 1em;
     cursor: pointer;
-    color: #000000;
 }
 
 /* Main Content */
 .main-content {
     flex-grow: 1;
-    padding: 20px;
-    background-color: #ffffff;
+    padding: 1.25rem;
+    background-color: var(--color-background);
     overflow-y: auto;
     margin-top: 0;
 }
@@ -136,34 +144,31 @@ body {
 #product-container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0.9375rem;
 }
 
 /* Product List Items */
 .product-list-item {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
-    background-color: #ffffff;
-    border: 1px solid #ffffff;
-    /* White border by default to prevent movement on hover */
-    border-radius: 8px;
-    gap: 15px;
+    padding: 0.625rem 0.9375rem;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-background);
+    border-radius: 0.5rem;
+    gap: 0.9375rem;
     cursor: pointer;
-    transition: border-color 0.3s ease;
+    transition: border-color var(--transition-speed) ease;
 }
 
 .product-list-item:hover {
-    border-color: #000000;
-    /* Black border on hover */
+    border-color: var(--color-text);
 }
 
 .product-logo {
-    width: 70px;
-    /* Increased size for product logos */
-    height: 70px;
+    width: 4.375rem;
+    height: 4.375rem;
     object-fit: contain;
-    border-radius: 5px;
+    border-radius: 0.3125rem;
 }
 
 .product-info {
@@ -174,33 +179,27 @@ body {
 }
 
 .product-info .product-name {
-    font-family: 'Figtree', sans-serif;
     font-weight: 600;
     font-size: 1.1em;
-    color: #000000;
 }
 
 .product-info .product-description {
-    font-family: 'Figtree', sans-serif;
     font-size: 1em;
-    color: #000000;
-    margin-left: 5px;
+    margin-left: 0.3125rem;
 }
 
 .product-info .product-meta {
-    font-family: 'Figtree', sans-serif;
     font-size: 0.9em;
-    color: #000000;
-    margin-top: 5px;
+    margin-top: 0.3125rem;
 }
 
 .product-info .product-meta .tag {
-    background-color: #ffffff;
-    border: 1px solid #000000;
-    border-radius: 5px;
-    padding: 2px 6px;
-    margin-right: 5px;
-    color: #000000;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-text);
+    border-radius: 0.3125rem;
+    padding: 0.125rem 0.375rem;
+    margin-right: 0.3125rem;
+    color: var(--color-text);
     cursor: pointer;
 }
 
@@ -210,35 +209,39 @@ body {
     text-decoration: underline;
     cursor: pointer;
     font-size: 0.9em;
-    color: #EA3323;
-    /* Crimson color for @usernames and product websites */
+    color: var(--color-accent);
 }
 
-.product-info .product-meta .clickable-tag:hover {
+.product-info .product-meta .clickable-tag:hover,
+.product-info .product-meta .clickable-tag:focus {
     color: #cc2b1f;
-    /* Slightly darker Crimson on hover */
 }
 
 .twitter-icon {
-    width: 12px;
-    /* Smaller Twitter icon */
-    height: 12px;
-    margin-left: 8px;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: 0.5rem;
     vertical-align: middle;
     cursor: pointer;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--transition-speed) ease;
 }
 
-.twitter-icon:hover {
+.twitter-icon:hover,
+.twitter-icon:focus {
     opacity: 0.7;
 }
 
-.product-links {
-    display: none;
+/* Accessibility */
+.main-header button:focus,
+.sort-section select:focus,
+.filter-section input[type="checkbox"]:focus,
+.product-list-item:focus-within {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
     .container {
         flex-direction: column;
     }
@@ -246,10 +249,40 @@ body {
     .sidebar {
         width: 100%;
         height: auto;
-        box-shadow: none;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
     }
 
     .main-content {
-        padding: 10px;
+        padding: 0.625rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+
+    .sidebar,
+    .main-header button {
+        display: none;
+    }
+
+    .main-content {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .product-list-item {
+        page-break-inside: avoid;
+        border: none;
+    }
+
+    .product-logo {
+        max-width: 3.125rem;
+        max-height: 3.125rem;
+    }
+
+    .twitter-icon {
+        display: none;
     }
 }
