@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <meta
       name="description"
       content="Discover the best products and tools in web3 - A comprehensive directory of web3 products and services."
@@ -28,24 +31,57 @@
           submit your product
         </button>
       </div>
+      <div class="mobile-header">
+        <h1>web3 product directory</h1>
+        <p>discover the best products & tools in web3</p>
+        <button id="mobileSubmitButton" aria-label="Submit your product">
+          submit your product
+        </button>
+        <button id="mobileFilterButton" aria-label="Toggle filters">
+          sort / filter
+        </button>
+      </div>
     </header>
+    <div class="mobile-filter-section">
+      <div class="sort-section">
+        <h3>Sort By</h3>
+        <select id="sortFilter" aria-label="Sort products">
+          <option value="alphabetical">alphabetical (a-z)</option>
+          <option value="recent">recently added</option>
+        </select>
+      </div>
+      <div class="filter-section">
+        <h3>Category</h3>
+        <div id="categoryFilter" aria-label="Filter by category"></div>
+      </div>
+      <div class="filter-section">
+        <h3>Blockchain</h3>
+        <div id="blockchainFilter" aria-label="Filter by blockchain"></div>
+      </div>
+    </div>
     <div class="container">
       <aside class="sidebar">
         <nav>
           <div class="sort-section">
             <h3>Sort By</h3>
-            <select id="sortFilter" aria-label="Sort products">
+            <select id="desktopSortFilter" aria-label="Sort products">
               <option value="alphabetical">alphabetical (a-z)</option>
               <option value="recent">recently added</option>
             </select>
           </div>
           <div class="filter-section">
             <h3>Category</h3>
-            <div id="categoryFilter" aria-label="Filter by category"></div>
+            <div
+              id="desktopCategoryFilter"
+              aria-label="Filter by category"
+            ></div>
           </div>
           <div class="filter-section">
             <h3>Blockchain</h3>
-            <div id="blockchainFilter" aria-label="Filter by blockchain"></div>
+            <div
+              id="desktopBlockchainFilter"
+              aria-label="Filter by blockchain"
+            ></div>
           </div>
         </nav>
       </aside>

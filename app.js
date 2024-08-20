@@ -5,6 +5,7 @@ const SUBMIT_FORM_URL = "https://tally.so/r/wgLJAN";
 const FALLBACK_IMAGE = "sydney.jpg";
 const APPROVED_COLUMN_INDEX = 12;
 const DEBOUNCE_DELAY = 300; // milliseconds
+const MOBILE_BREAKPOINT = 768; // pixels
 
 let allProducts = [];
 
@@ -95,18 +96,9 @@ function parseCSV(data) {
 
 // Display Functions
 function extractTwitterUsername(url) {
-  if (!url) {
-    console.warn("Missing Twitter URL.");
-    return null;
-  }
-
-  try {
-    const urlObj = new URL(url);
-    return urlObj.pathname.split("/").filter(Boolean)[0];
-  } catch (error) {
-    console.error(`Invalid URL: ${url}`, error);
-    return null;
-  }
+  if (!url) return null;
+  const urlObj = new URL(url);
+  return urlObj.pathname.split("/").filter(Boolean)[0];
 }
 
 function cleanUrl(url) {
@@ -213,6 +205,12 @@ function displayProducts(products) {
 function populateFilterOptions(products) {
   const categoryFilter = document.getElementById("categoryFilter");
   const blockchainFilter = document.getElementById("blockchainFilter");
+  const desktopCategoryFilter = document.getElementById(
+    "desktopCategoryFilter"
+  );
+  const desktopBlockchainFilter = document.getElementById(
+    "desktopBlockchainFilter"
+  );
 
   const categories = new Set();
   const blockchains = new Set();
@@ -242,22 +240,43 @@ function populateFilterOptions(products) {
     parentElement.appendChild(container);
   }
 
-  categories.forEach((category) =>
-    createCheckbox(category, categoryFilter, "category-checkbox")
-  );
-  blockchains.forEach((blockchain) =>
-    createCheckbox(blockchain, blockchainFilter, "blockchain-checkbox")
-  );
+  categories.forEach((category) => {
+    createCheckbox(category, categoryFilter, "category-checkbox");
+    createCheckbox(
+      category,
+      desktopCategoryFilter,
+      "desktop-category-checkbox"
+    );
+  });
+  blockchains.forEach((blockchain) => {
+    createCheckbox(blockchain, blockchainFilter, "blockchain-checkbox");
+    createCheckbox(
+      blockchain,
+      desktopBlockchainFilter,
+      "desktop-blockchain-checkbox"
+    );
+  });
 }
 
 function applyFiltersAndSorting() {
+  const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
   const selectedCategories = Array.from(
-    document.querySelectorAll(".category-checkbox:checked")
+    document.querySelectorAll(
+      isMobile
+        ? ".category-checkbox:checked"
+        : ".desktop-category-checkbox:checked"
+    )
   ).map((checkbox) => checkbox.value);
   const selectedBlockchains = Array.from(
-    document.querySelectorAll(".blockchain-checkbox:checked")
+    document.querySelectorAll(
+      isMobile
+        ? ".blockchain-checkbox:checked"
+        : ".desktop-blockchain-checkbox:checked"
+    )
   ).map((checkbox) => checkbox.value);
-  const sortBy = document.getElementById("sortFilter").value;
+  const sortBy = document.getElementById(
+    isMobile ? "sortFilter" : "desktopSortFilter"
+  ).value;
 
   let filteredProducts = allProducts.filter((product) => {
     const categoryMatch =
@@ -282,10 +301,45 @@ function applyFiltersAndSorting() {
   displayProducts(filteredProducts);
 }
 
+// Mobile-specific functions
+function toggleMobileFilterSection() {
+  const filterSection = document.querySelector(".mobile-filter-section");
+  if (
+    filterSection.style.display === "none" ||
+    filterSection.style.display === ""
+  ) {
+    filterSection.style.display = "block";
+  } else {
+    filterSection.style.display = "none";
+  }
+}
+
+function handleResponsiveLayout() {
+  const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+  const mobileFilterSection = document.querySelector(".mobile-filter-section");
+  const sidebar = document.querySelector(".sidebar");
+
+  if (isMobile) {
+    mobileFilterSection.style.display = "none";
+    sidebar.style.display = "none";
+  } else {
+    mobileFilterSection.style.display = "none";
+    sidebar.style.display = "block";
+  }
+}
+
 // Event Listeners
 document.getElementById("submitButton").addEventListener("click", () => {
   window.open(SUBMIT_FORM_URL, "_blank");
 });
+
+document.getElementById("mobileSubmitButton").addEventListener("click", () => {
+  window.open(SUBMIT_FORM_URL, "_blank");
+});
+
+document
+  .getElementById("mobileFilterButton")
+  .addEventListener("click", toggleMobileFilterSection);
 
 document
   .getElementById("categoryFilter")
@@ -297,18 +351,30 @@ document
   .getElementById("sortFilter")
   .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
 
+document
+  .getElementById("desktopCategoryFilter")
+  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
+document
+  .getElementById("desktopBlockchainFilter")
+  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
+document
+  .getElementById("desktopSortFilter")
+  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
+
+window.addEventListener(
+  "resize",
+  debounce(handleResponsiveLayout, DEBOUNCE_DELAY)
+);
+
 // Initialize
 async function init() {
   try {
     const response = await fetch(CSV_URL);
     const data = await response.text();
     allProducts = parseCSV(data);
-
-    // Log the total number of products loaded
-    console.log(`Total products loaded: ${allProducts.length}`);
-
     populateFilterOptions(allProducts);
     applyFiltersAndSorting();
+    handleResponsiveLayout();
   } catch (error) {
     console.error("Error fetching CSV data:", error);
   }
