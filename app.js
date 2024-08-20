@@ -1,22 +1,24 @@
 // Constants
-const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1YkJ7VEeP1RT4PGS2D_X9S4i0L9FT_KLeC-UKVVv5nbo/pub?output=csv";
-const SUBMIT_FORM_URL = "https://tally.so/r/wgLJAN";
-const FALLBACK_IMAGE = "sydney.jpg";
-const APPROVED_COLUMN_INDEX = 12;
-const DEBOUNCE_DELAY = 300; // milliseconds
-const MOBILE_BREAKPOINT = 768; // pixels
+const CONFIG = {
+  CSV_URL:
+    "https://docs.google.com/spreadsheets/d/1YkJ7VEeP1RT4PGS2D_X9S4i0L9FT_KLeC-UKVVv5nbo/pub?output=csv",
+  SUBMIT_FORM_URL: "https://tally.so/r/wgLJAN",
+  FALLBACK_IMAGE: "sydney.jpg",
+  APPROVED_COLUMN_INDEX: 13,
+  DEGODS_PROJECT_COLUMN_INDEX: 12,
+  DEBOUNCE_DELAY: 300,
+  MOBILE_BREAKPOINT: 768,
+};
 
+// State
 let allProducts = [];
 
 // Utility Functions
 const debounce = (func, delay) => {
   let debounceTimer;
-  return function () {
-    const context = this;
-    const args = arguments;
+  return function (...args) {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    debounceTimer = setTimeout(() => func.apply(this, args), delay);
   };
 };
 
@@ -27,7 +29,7 @@ const sanitizeHTML = (str) => {
 };
 
 // CSV Parsing Functions
-function parseCSVRow(row) {
+const parseCSVRow = (row) => {
   const result = [];
   let inQuotes = false;
   let value = "";
@@ -45,72 +47,62 @@ function parseCSVRow(row) {
 
   result.push(value.trim());
   return result;
-}
+};
 
-function parseCSV(data) {
+const parseCSV = (data) => {
   const rows = data.split("\n").slice(1); // Skip header row
   return rows
     .map((row) => {
       const cols = parseCSVRow(row);
-      if (cols && cols[APPROVED_COLUMN_INDEX].toLowerCase() === "yes") {
+      if (cols && cols[CONFIG.APPROVED_COLUMN_INDEX].toLowerCase() === "yes") {
+        const isDeGodsProject =
+          cols[CONFIG.DEGODS_PROJECT_COLUMN_INDEX].toLowerCase() === "yes";
         return {
           submissionId: cols[0],
           respondentId: cols[1],
           submittedAt: new Date(cols[2]),
-          productName: sanitizeHTML(
-            cols[3] ? cols[3].replace(/^"|"$/g, "") : ""
-          ),
+          productName: sanitizeHTML(cols[3]?.replace(/^"|"$/g, "") || ""),
           productDescription: sanitizeHTML(
-            cols[4] ? cols[4].replace(/^"|"$/g, "") : ""
+            cols[4]?.replace(/^"|"$/g, "") || ""
           ),
-          productCategory: cols[5]
-            ? cols[5]
-                .split(",")
-                .map((tag) => sanitizeHTML(tag.trim().replace(/^"|"$/g, "")))
-            : [],
-          productBlockchain: cols[6]
-            ? cols[6]
-                .split(",")
-                .map((chain) =>
-                  sanitizeHTML(chain.trim().replace(/^"|"$/g, ""))
-                )
-            : [],
-          productWebsite: sanitizeHTML(
-            cols[7] ? cols[7].replace(/^"|"$/g, "") : ""
-          ),
-          productTwitter: sanitizeHTML(
-            cols[8] ? cols[8].replace(/^"|"$/g, "") : ""
-          ),
-          founderTwitter: sanitizeHTML(
-            cols[11] ? cols[11].replace(/^"|"$/g, "") : ""
-          ),
-          productLogo: encodeURI(
-            cols[10] ? cols[10].replace(/^"|"$/g, "") : ""
-          ),
+          productCategory:
+            cols[5]
+              ?.split(",")
+              .map((tag) => sanitizeHTML(tag.trim().replace(/^"|"$/g, ""))) ||
+            [],
+          productBlockchain:
+            cols[6]
+              ?.split(",")
+              .map((chain) =>
+                sanitizeHTML(chain.trim().replace(/^"|"$/g, ""))
+              ) || [],
+          productWebsite: sanitizeHTML(cols[7]?.replace(/^"|"$/g, "") || ""),
+          productTwitter: sanitizeHTML(cols[8]?.replace(/^"|"$/g, "") || ""),
+          founderTwitter: sanitizeHTML(cols[11]?.replace(/^"|"$/g, "") || ""),
+          productLogo: encodeURI(cols[10]?.replace(/^"|"$/g, "") || ""),
+          isDeGodsProject,
         };
       }
       return null;
     })
-    .filter((product) => product !== null);
-}
+    .filter(Boolean);
+};
 
 // Display Functions
-function extractTwitterUsername(url) {
+const extractTwitterUsername = (url) => {
   if (!url) return null;
   const urlObj = new URL(url);
   return urlObj.pathname.split("/").filter(Boolean)[0];
-}
+};
 
-function cleanUrl(url) {
-  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-}
+const cleanUrl = (url) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
-function createProductElement(product) {
+const createProductElement = (product) => {
   const productDiv = document.createElement("div");
   productDiv.classList.add("product-list-item");
-  productDiv.addEventListener("click", () => {
-    window.open(product.productWebsite, "_blank");
-  });
+  productDiv.addEventListener("click", () =>
+    window.open(product.productWebsite, "_blank")
+  );
 
   // Product Logo
   if (product.productLogo) {
@@ -118,11 +110,20 @@ function createProductElement(product) {
     logo.src = product.productLogo;
     logo.loading = "lazy";
     logo.onerror = () => {
-      logo.src = FALLBACK_IMAGE;
+      logo.src = CONFIG.FALLBACK_IMAGE;
     };
     logo.alt = `${product.productName} logo`;
     logo.classList.add("product-logo");
     productDiv.appendChild(logo);
+  }
+
+  // DeGods Project Badge
+  if (product.isDeGodsProject) {
+    const deGodsBadge = document.createElement("img");
+    deGodsBadge.src = "degods.png";
+    deGodsBadge.alt = "DeGods Project";
+    deGodsBadge.classList.add("degods-badge");
+    productDiv.appendChild(deGodsBadge);
   }
 
   // Product Info
@@ -132,8 +133,8 @@ function createProductElement(product) {
   // Name and Description
   const nameAndDescription = document.createElement("div");
   nameAndDescription.innerHTML = `
-    <span class="product-name">${product.productName}</span>
-    <span class="product-description"> – ${product.productDescription}</span>
+      <span class="product-name">${product.productName}</span>
+      <span class="product-description"> – ${product.productDescription}</span>
   `;
 
   // Founder Twitter
@@ -141,9 +142,9 @@ function createProductElement(product) {
     const username = extractTwitterUsername(product.founderTwitter);
     if (username) {
       nameAndDescription.innerHTML += `
-        <span>, built by </span>
-        <span class="clickable-tag">@${username}</span>
-      `;
+              <span>, built by </span>
+              <span class="clickable-tag">@${username}</span>
+          `;
       const founderLink = nameAndDescription.querySelector(".clickable-tag");
       founderLink.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -168,9 +169,9 @@ function createProductElement(product) {
   const websiteAndTwitterDiv = document.createElement("div");
   websiteAndTwitterDiv.classList.add("product-meta");
   websiteAndTwitterDiv.innerHTML = `
-    <a href="${
-      product.productWebsite
-    }" class="clickable-tag" target="_blank">${cleanUrl(
+      <a href="${
+        product.productWebsite
+      }" class="clickable-tag" target="_blank">${cleanUrl(
     product.productWebsite
   )}</a>
   `;
@@ -191,18 +192,18 @@ function createProductElement(product) {
   productDiv.appendChild(infoDiv);
 
   return productDiv;
-}
+};
 
-function displayProducts(products) {
+const displayProducts = (products) => {
   const container = document.getElementById("product-container");
   container.innerHTML = "";
   products.forEach((product) => {
     container.appendChild(createProductElement(product));
   });
-}
+};
 
 // Filter and Sort Functions
-function populateFilterOptions(products) {
+const populateFilterOptions = (products) => {
   const categoryFilter = document.getElementById("categoryFilter");
   const blockchainFilter = document.getElementById("blockchainFilter");
   const desktopCategoryFilter = document.getElementById(
@@ -222,7 +223,7 @@ function populateFilterOptions(products) {
     );
   });
 
-  function createCheckbox(value, parentElement, className) {
+  const createCheckbox = (value, parentElement, className) => {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.value = value;
@@ -238,7 +239,7 @@ function populateFilterOptions(products) {
     container.appendChild(label);
 
     parentElement.appendChild(container);
-  }
+  };
 
   categories.forEach((category) => {
     createCheckbox(category, categoryFilter, "category-checkbox");
@@ -256,10 +257,10 @@ function populateFilterOptions(products) {
       "desktop-blockchain-checkbox"
     );
   });
-}
+};
 
-function applyFiltersAndSorting() {
-  const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+const applyFiltersAndSorting = () => {
+  const isMobile = window.innerWidth < CONFIG.MOBILE_BREAKPOINT;
   const selectedCategories = Array.from(
     document.querySelectorAll(
       isMobile
@@ -299,85 +300,77 @@ function applyFiltersAndSorting() {
   }
 
   displayProducts(filteredProducts);
-}
+};
 
 // Mobile-specific functions
-function toggleMobileFilterSection() {
+const toggleMobileFilterSection = () => {
   const filterSection = document.querySelector(".mobile-filter-section");
-  if (
-    filterSection.style.display === "none" ||
-    filterSection.style.display === ""
-  ) {
-    filterSection.style.display = "block";
-  } else {
-    filterSection.style.display = "none";
-  }
-}
+  filterSection.style.display =
+    filterSection.style.display === "none" ? "block" : "none";
+};
 
-function handleResponsiveLayout() {
-  const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+const handleResponsiveLayout = () => {
+  const isMobile = window.innerWidth < CONFIG.MOBILE_BREAKPOINT;
   const mobileFilterSection = document.querySelector(".mobile-filter-section");
   const sidebar = document.querySelector(".sidebar");
 
-  if (isMobile) {
-    mobileFilterSection.style.display = "none";
-    sidebar.style.display = "none";
-  } else {
-    mobileFilterSection.style.display = "none";
-    sidebar.style.display = "block";
-  }
-}
+  mobileFilterSection.style.display = isMobile ? "none" : "none";
+  sidebar.style.display = isMobile ? "none" : "block";
+};
 
 // Event Listeners
-document.getElementById("submitButton").addEventListener("click", () => {
-  window.open(SUBMIT_FORM_URL, "_blank");
-});
+const addEventListeners = () => {
+  document
+    .getElementById("submitButton")
+    .addEventListener("click", () =>
+      window.open(CONFIG.SUBMIT_FORM_URL, "_blank")
+    );
+  document
+    .getElementById("mobileSubmitButton")
+    .addEventListener("click", () =>
+      window.open(CONFIG.SUBMIT_FORM_URL, "_blank")
+    );
+  document
+    .getElementById("mobileFilterButton")
+    .addEventListener("click", toggleMobileFilterSection);
 
-document.getElementById("mobileSubmitButton").addEventListener("click", () => {
-  window.open(SUBMIT_FORM_URL, "_blank");
-});
+  const filterElements = [
+    "categoryFilter",
+    "blockchainFilter",
+    "sortFilter",
+    "desktopCategoryFilter",
+    "desktopBlockchainFilter",
+    "desktopSortFilter",
+  ];
+  filterElements.forEach((id) => {
+    document
+      .getElementById(id)
+      .addEventListener(
+        "change",
+        debounce(applyFiltersAndSorting, CONFIG.DEBOUNCE_DELAY)
+      );
+  });
 
-document
-  .getElementById("mobileFilterButton")
-  .addEventListener("click", toggleMobileFilterSection);
-
-document
-  .getElementById("categoryFilter")
-  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
-document
-  .getElementById("blockchainFilter")
-  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
-document
-  .getElementById("sortFilter")
-  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
-
-document
-  .getElementById("desktopCategoryFilter")
-  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
-document
-  .getElementById("desktopBlockchainFilter")
-  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
-document
-  .getElementById("desktopSortFilter")
-  .addEventListener("change", debounce(applyFiltersAndSorting, DEBOUNCE_DELAY));
-
-window.addEventListener(
-  "resize",
-  debounce(handleResponsiveLayout, DEBOUNCE_DELAY)
-);
+  window.addEventListener(
+    "resize",
+    debounce(handleResponsiveLayout, CONFIG.DEBOUNCE_DELAY)
+  );
+};
 
 // Initialize
-async function init() {
+const init = async () => {
   try {
-    const response = await fetch(CSV_URL);
+    const response = await fetch(CONFIG.CSV_URL);
     const data = await response.text();
     allProducts = parseCSV(data);
     populateFilterOptions(allProducts);
     applyFiltersAndSorting();
     handleResponsiveLayout();
+    addEventListeners();
   } catch (error) {
     console.error("Error fetching CSV data:", error);
   }
-}
+};
 
+// Start the application
 init();
