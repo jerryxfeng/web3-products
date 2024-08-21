@@ -6,6 +6,7 @@ const CONFIG = {
   FALLBACK_IMAGE: "sydney.jpg",
   APPROVED_COLUMN_INDEX: 13,
   DEGODS_PROJECT_COLUMN_INDEX: 12,
+  S_TIER_COLUMN_INDEX: 14,
   DEBOUNCE_DELAY: 300,
   MOBILE_BREAKPOINT: 768,
 };
@@ -57,6 +58,8 @@ const parseCSV = (data) => {
       if (cols && cols[CONFIG.APPROVED_COLUMN_INDEX].toLowerCase() === "yes") {
         const isDeGodsProject =
           cols[CONFIG.DEGODS_PROJECT_COLUMN_INDEX].toLowerCase() === "yes";
+        const isSTier =
+          cols[CONFIG.S_TIER_COLUMN_INDEX].toLowerCase() === "yes";
         return {
           submissionId: cols[0],
           respondentId: cols[1],
@@ -81,6 +84,7 @@ const parseCSV = (data) => {
           founderTwitter: sanitizeHTML(cols[11]?.replace(/^"|"$/g, "") || ""),
           productLogo: encodeURI(cols[10]?.replace(/^"|"$/g, "") || ""),
           isDeGodsProject,
+          isSTier,
         };
       }
       return null;
@@ -128,7 +132,6 @@ const createProductElement = (product) => {
   const nameSpan = document.createElement("span");
   nameSpan.classList.add("product-name");
   nameSpan.textContent = product.productName;
-
   nameAndDescription.appendChild(nameSpan);
 
   // DeGods Project Badge
@@ -285,6 +288,9 @@ const applyFiltersAndSorting = () => {
   const sortBy = document.getElementById(
     isMobile ? "sortFilter" : "desktopSortFilter"
   ).value;
+  const showDeGodsOnly = document.getElementById(
+    isMobile ? "mobileProductToggle" : "desktopProductToggle"
+  ).checked;
 
   let filteredProducts = allProducts.filter((product) => {
     const categoryMatch =
@@ -297,7 +303,10 @@ const applyFiltersAndSorting = () => {
       product.productBlockchain.some((blockchain) =>
         selectedBlockchains.includes(blockchain)
       );
-    return categoryMatch && blockchainMatch;
+    const deGodsMatch = showDeGodsOnly
+      ? product.isDeGodsProject
+      : product.isSTier;
+    return categoryMatch && blockchainMatch && deGodsMatch;
   });
 
   if (sortBy === "alphabetical") {
@@ -357,6 +366,13 @@ const addEventListeners = () => {
         debounce(applyFiltersAndSorting, CONFIG.DEBOUNCE_DELAY)
       );
   });
+
+  document
+    .getElementById("mobileProductToggle")
+    .addEventListener("change", applyFiltersAndSorting);
+  document
+    .getElementById("desktopProductToggle")
+    .addEventListener("change", applyFiltersAndSorting);
 
   window.addEventListener(
     "resize",

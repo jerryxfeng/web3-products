@@ -168,6 +168,7 @@ body {
     gap: 0.9375rem;
     cursor: pointer;
     transition: border-color var(--transition-speed) ease;
+    position: relative;
 }
 
 .product-list-item:hover {
@@ -185,6 +186,7 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .name-and-description {
@@ -259,6 +261,70 @@ body {
 .twitter-icon:hover,
 .twitter-icon:focus {
     opacity: 0.7;
+}
+
+/* Toggle Switch Styles */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.toggle-label {
+    margin: 0 0.5rem;
+    font-size: 0.9em;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: var(--color-accent);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }
 
 /* Accessibility */
@@ -417,6 +483,15 @@ body {
     .degods-badge {
         width: 0.9em;
         height: 0.9em;
+    }
+
+    .toggle-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .toggle-label {
+        margin: 0.5rem 0;
     }
 }
 
