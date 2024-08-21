@@ -92,7 +92,7 @@ body {
 }
 
 .sidebar {
-    width: 15.625rem;
+    width: 21rem;
     background-color: var(--color-background);
     color: var(--color-text);
     padding: 1.25rem;
