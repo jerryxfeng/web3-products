@@ -45,11 +45,34 @@ body {
     justify-content: center;
 }
 
-.main-header h1 {
+.main-header h1,
+.mobile-header h1 {
     font-size: 2em;
     margin: 0;
     color: var(--color-text);
     font-weight: 600;
+}
+
+.title-wrapper {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+}
+
+.degods-wordmark {
+    height: 1em;
+    width: auto;
+    margin: 0 0.2em;
+    vertical-align: baseline;
+    display: inline;
+}
+
+.degods-wordmark-small {
+    height: 0.9em;
+    width: auto;
+    margin: 0 0.1em;
+    vertical-align: baseline;
+    display: inline;
 }
 
 .main-header p {
@@ -274,6 +297,8 @@ body {
 .toggle-label {
     margin: 0 0.5rem;
     font-size: 0.9em;
+    display: flex;
+    align-items: center;
 }
 
 .switch {
@@ -352,6 +377,12 @@ input:checked+.slider:before {
         font-size: 1.5rem;
         margin: 0 0 0.5rem 0;
         line-height: 1.2;
+    }
+
+    .mobile-header .degods-wordmark {
+        height: 1em;
+        width: auto;
+        margin: 0 0.1em;
     }
 
     .mobile-header p {
@@ -493,6 +524,11 @@ input:checked+.slider:before {
     .toggle-label {
         margin: 0.5rem 0;
     }
+
+    .degods-wordmark-small {
+        height: 0.9em;
+        width: auto;
+    }
 }
 
 /* Print Styles */
@@ -530,4 +566,113 @@ input:checked+.slider:before {
         text-decoration: none;
         color: var(--color-text);
     }
+
+    .degods-wordmark,
+    .degods-wordmark-small {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Additional styles for better responsiveness */
+@media (max-width: 30rem) {
+
+    .main-header h1,
+    .mobile-header h1 {
+        font-size: 1.5em;
+    }
+
+    .main-header p,
+    .mobile-header p {
+        font-size: 0.9em;
+    }
+
+    .product-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .product-logo {
+        margin-bottom: 0.5rem;
+    }
+
+    .product-info {
+        width: 100%;
+    }
+}
+
+/* Ensure proper alignment for the toggle switch on very small screens */
+@media (max-width: 20rem) {
+    .toggle-container {
+        flex-direction: column;
+    }
+
+    .switch {
+        margin: 0.5rem 0;
+    }
+}
+
+/* High contrast mode styles for accessibility */
+@media (prefers-contrast: high) {
+    :root {
+        --color-background: #ffffff;
+        --color-text: #000000;
+        --color-accent: #000000;
+        --color-border: #000000;
+    }
+
+    .product-list-item:hover {
+        outline: 2px solid var(--color-text);
+    }
+
+    .switch {
+        border: 2px solid var(--color-text);
+    }
+
+    input:checked+.slider {
+        background-color: var(--color-text);
+    }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Ensure proper focus styles for keyboard navigation */
+*:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* Styles for screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Ensure text remains visible during webfont load */
+.fonts-loading {
+    font-family: Arial, sans-serif;
+}
+
+/* Fallback for browsers that don't support CSS variables */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+button {
+    background-color: #EA3323;
+    color: #ffffff;
 }

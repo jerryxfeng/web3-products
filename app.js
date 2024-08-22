@@ -29,6 +29,25 @@ const sanitizeHTML = (str) => {
   return temp.innerHTML;
 };
 
+// Updated function to clean and format URLs
+const formatUrl = (url) => {
+  if (!url) return "";
+  try {
+    const urlObj = new URL(url);
+    let domain = urlObj.hostname;
+    // Remove 'www.' if present
+    domain = domain.replace(/^www\./, "");
+    // Add path if it exists and is not just '/'
+    if (urlObj.pathname && urlObj.pathname !== "/") {
+      domain += urlObj.pathname;
+    }
+    return domain;
+  } catch (e) {
+    // If URL is invalid, return the original string
+    return url.replace(/^https?:\/\//, "").split("/")[0];
+  }
+};
+
 // CSV Parsing Functions
 const parseCSVRow = (row) => {
   const result = [];
@@ -98,8 +117,6 @@ const extractTwitterUsername = (url) => {
   const urlObj = new URL(url);
   return urlObj.pathname.split("/").filter(Boolean)[0];
 };
-
-const cleanUrl = (url) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
 const createProductElement = (product) => {
   const productDiv = document.createElement("div");
@@ -181,7 +198,7 @@ const createProductElement = (product) => {
   websiteAndTwitterDiv.innerHTML = `
       <a href="${
         product.productWebsite
-      }" class="clickable-tag" target="_blank">${cleanUrl(
+      }" class="clickable-tag" target="_blank">${formatUrl(
     product.productWebsite
   )}</a>
   `;
