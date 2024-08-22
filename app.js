@@ -3,7 +3,7 @@ const CONFIG = {
   CSV_URL:
     "https://docs.google.com/spreadsheets/d/1YkJ7VEeP1RT4PGS2D_X9S4i0L9FT_KLeC-UKVVv5nbo/pub?output=csv",
   SUBMIT_FORM_URL: "https://tally.so/r/wgLJAN",
-  FALLBACK_IMAGE: "sydney.jpg",
+  FALLBACK_IMAGE: "https://web3-products.vercel.app/sydney.jpg",
   APPROVED_COLUMN_INDEX: 13,
   DEGODS_PROJECT_COLUMN_INDEX: 12,
   S_TIER_COLUMN_INDEX: 14,
@@ -137,7 +137,7 @@ const createProductElement = (product) => {
   // DeGods Project Badge
   if (product.isDeGodsProject) {
     const deGodsBadge = document.createElement("img");
-    deGodsBadge.src = "degods.png";
+    deGodsBadge.src = "https://web3-products.vercel.app/degods.png";
     deGodsBadge.alt = "DeGods Project";
     deGodsBadge.classList.add("degods-badge");
     nameAndDescription.appendChild(deGodsBadge);
@@ -188,7 +188,7 @@ const createProductElement = (product) => {
 
   if (product.productTwitter) {
     const twitterIcon = document.createElement("img");
-    twitterIcon.src = "twitter.svg";
+    twitterIcon.src = "https://web3-products.vercel.app/twitter.svg";
     twitterIcon.alt = "Twitter";
     twitterIcon.classList.add("twitter-icon");
     twitterIcon.addEventListener("click", (e) => {
