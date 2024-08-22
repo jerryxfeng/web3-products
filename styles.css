@@ -62,7 +62,7 @@ body {
 .degods-wordmark {
     height: 1em;
     width: auto;
-    margin: 0 0.2em;
+    margin: 0 0.3em;
     vertical-align: baseline;
     display: inline;
 }
@@ -70,7 +70,7 @@ body {
 .degods-wordmark-small {
     height: 0.9em;
     width: auto;
-    margin: 0 0.1em;
+    margin: 0 0.3em;
     vertical-align: baseline;
     display: inline;
 }
@@ -115,7 +115,7 @@ body {
 }
 
 .sidebar {
-    width: 21rem;
+    width: 22rem;
     background-color: var(--color-background);
     color: var(--color-text);
     padding: 1.25rem;
@@ -382,7 +382,7 @@ input:checked+.slider:before {
     .mobile-header .degods-wordmark {
         height: 1em;
         width: auto;
-        margin: 0 0.1em;
+        margin: 0 0.3em;
     }
 
     .mobile-header p {
