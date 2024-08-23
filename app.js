@@ -494,8 +494,12 @@ const init = async () => {
     document.getElementById("desktopProductToggle").checked = false;
     document.getElementById("mobileProductToggle").checked = false;
 
+    // Set the default sort to "Recently added"
+    document.getElementById("desktopSortFilter").value = "recent";
+    document.getElementById("sortFilter").value = "recent";
+
     populateFilterOptions(allProducts);
-    applyFiltersAndSorting();
+    applyFiltersAndSorting(); // Apply filters and sorting with the default sort as "recently added"
     handleResponsiveLayout();
     handleLayoutChange(); // Add this line to ensure correct initial layout
     addEventListeners();
