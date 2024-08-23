@@ -113,7 +113,7 @@ body {
 }
 
 .sidebar {
-    width: 22rem;
+    width: 23rem;
     background-color: var(--color-background);
     color: var(--color-text);
     padding: 1.25rem;
@@ -157,9 +157,82 @@ body {
     accent-color: var(--color-text);
 }
 
+/* Container to apply the same max-width */
+.checkbox-container {
+    max-width: 260px;
+    /* Adjust the max-width as needed */
+    margin: 0 auto;
+    /* Center the container */
+}
+
 .filter-section label {
     font-size: 1em;
     cursor: pointer;
+    color: var(--color-text);
+}
+
+/* Toggle Header */
+.toggle-header {
+    margin-bottom: 0.75rem;
+}
+
+.toggle-header h3 {
+    font-size: 1.2em;
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+/* Narrowing the toggle description paragraph */
+.toggle-description-container {
+    max-width: 250px;
+    /* Adjust the max-width to your preference */
+    margin: 0 auto;
+    /* Center the container */
+}
+
+/* Update the styles for the paragraph itself if necessary */
+.toggle-description {
+    font-size: 0.9em;
+    color: var(--color-text);
+    margin: 2rem 0;
+    text-align: center;
+    /* Center the text within the narrower container */
+    line-height: 1.6;
+    /* Optional: Improve readability */
+}
+
+/* Divider Line */
+.divider-line {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+    /* Increased margin */
+}
+
+/* New Product Filter */
+.new-product-title {
+    margin-bottom: 0.5rem;
+}
+
+.new-product-title h3 {
+    font-size: 1.2em;
+    color: var(--color-text);
+    font-weight: 600;
+    margin: 0;
+}
+
+.new-product-filter {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.new-product-filter input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+.new-product-filter label {
+    font-size: 0.9em;
     color: var(--color-text);
 }
 
@@ -295,7 +368,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    margin: 2rem 0;
+    /* Increased margin */
 }
 
 .toggle-label {
@@ -325,7 +399,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: var(--color-accent);
     transition: .4s;
 }
 
@@ -341,7 +415,7 @@ body {
 }
 
 input:checked+.slider {
-    background-color: var(--color-accent);
+    background-color: var(--color-text);
 }
 
 input:checked+.slider:before {

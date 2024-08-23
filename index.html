@@ -47,7 +47,7 @@
       href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://web3-products.vercel.app/styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <link
       rel="icon"
       href="https://web3-products.vercel.app/degods-gold.png"
@@ -96,9 +96,9 @@
     </header>
     <div class="mobile-filter-section">
       <div class="toggle-container">
-        <span class="toggle-label">All products</span>
+        <span class="toggle-label">😍 products</span>
         <label class="switch">
-          <input type="checkbox" id="mobileProductToggle" />
+          <input type="checkbox" id="mobileProductToggle" checked />
           <span class="slider round"></span>
         </label>
         <span class="toggle-label">
@@ -109,6 +109,21 @@
             class="degods-wordmark-small"
           />
         </span>
+      </div>
+      <div class="toggle-description-container">
+        <p class="toggle-description">
+          😍 = we love this product & use it a lot
+        </p>
+      </div>
+      <hr class="divider-line" />
+      <div class="new-product-title">
+        <h3>Show new products?</h3>
+      </div>
+      <div class="new-product-filter">
+        <input type="checkbox" id="mobileNewProductToggle" checked />
+        <label for="mobileNewProductToggle"
+          >show 🆕 products that recently launched or are being built</label
+        >
       </div>
       <div class="sort-section">
         <h3>Sort by</h3>
@@ -130,9 +145,9 @@
       <aside class="sidebar">
         <nav>
           <div class="toggle-container">
-            <span class="toggle-label">All products</span>
+            <span class="toggle-label">😍 products</span>
             <label class="switch">
-              <input type="checkbox" id="desktopProductToggle" />
+              <input type="checkbox" id="desktopProductToggle" checked />
               <span class="slider round"></span>
             </label>
             <span class="toggle-label">
@@ -144,26 +159,45 @@
               />
             </span>
           </div>
-          <div class="sort-section">
-            <h3>Sort by</h3>
-            <select id="desktopSortFilter" aria-label="Sort products">
-              <option value="alphabetical">Alphabetical (A-Z)</option>
-              <option value="recent">Recently added</option>
-            </select>
+          <div class="toggle-description-container">
+            <p class="toggle-description">
+              😍 = we love this product & use it a lot
+            </p>
           </div>
-          <div class="filter-section">
-            <h3>Category</h3>
-            <div
-              id="desktopCategoryFilter"
-              aria-label="Filter by category"
-            ></div>
+          <hr class="divider-line" />
+          <div class="checkbox-container">
+            <div class="new-product-title">
+              <h3>Show new products?</h3>
+            </div>
+            <div class="new-product-filter">
+              <input type="checkbox" id="desktopNewProductToggle" checked />
+              <label for="desktopNewProductToggle">
+                show 🆕 products that recently launched or are being built
+              </label>
+            </div>
           </div>
-          <div class="filter-section">
-            <h3>Chain</h3>
-            <div
-              id="desktopBlockchainFilter"
-              aria-label="Filter by blockchain"
-            ></div>
+          <div class="checkbox-container">
+            <div class="sort-section">
+              <h3>Sort by</h3>
+              <select id="desktopSortFilter" aria-label="Sort products">
+                <option value="alphabetical">Alphabetical (A-Z)</option>
+                <option value="recent">Recently added</option>
+              </select>
+            </div>
+            <div class="filter-section">
+              <h3>Category</h3>
+              <div
+                id="desktopCategoryFilter"
+                aria-label="Filter by category"
+              ></div>
+            </div>
+            <div class="filter-section">
+              <h3>Chain</h3>
+              <div
+                id="desktopBlockchainFilter"
+                aria-label="Filter by blockchain"
+              ></div>
+            </div>
           </div>
         </nav>
       </aside>
@@ -177,9 +211,6 @@
         JavaScript in your browser settings.
       </p>
     </noscript>
-    <script
-      src="https://web3-products.vercel.app/app.js"
-      type="module"
-    ></script>
+    <script src="/app.js" type="module"></script>
   </body>
 </html>

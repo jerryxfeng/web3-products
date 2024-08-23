@@ -7,6 +7,7 @@ const CONFIG = {
   APPROVED_COLUMN_INDEX: 13,
   DEGODS_PROJECT_COLUMN_INDEX: 12,
   S_TIER_COLUMN_INDEX: 14,
+  NEW_PRODUCT_COLUMN_INDEX: 15,
   DEBOUNCE_DELAY: 300,
   MOBILE_BREAKPOINT: 768,
 };
@@ -77,6 +78,9 @@ const parseCSV = (data) => {
           cols[CONFIG.DEGODS_PROJECT_COLUMN_INDEX].toLowerCase() === "yes";
         const isSTier =
           cols[CONFIG.S_TIER_COLUMN_INDEX].toLowerCase() === "yes";
+        const isNewProduct =
+          cols[CONFIG.NEW_PRODUCT_COLUMN_INDEX]?.toLowerCase() === "yes";
+
         return {
           submissionId: cols[0],
           respondentId: cols[1],
@@ -102,6 +106,7 @@ const parseCSV = (data) => {
           productLogo: encodeURI(cols[10]?.replace(/^"|"$/g, "") || ""),
           isDeGodsProject,
           isSTier,
+          isNewProduct,
         };
       }
       return null;
@@ -225,11 +230,23 @@ const createDescriptionFounderContent = (product) => {
 const createMetaDiv = (product) => {
   const metaDiv = document.createElement("div");
   metaDiv.classList.add("product-meta");
-  metaDiv.textContent = `${product.productCategory.join(" · ")} · ${
+
+  // Build the meta string with blockchain, new product and S-tier emojis
+  let metaText = `${product.productCategory.join(" · ")} · ${
     product.productBlockchain.length > 1
       ? "multichain"
       : product.productBlockchain.join(", ")
   }`;
+
+  if (product.isNewProduct) {
+    metaText += " · 🆕";
+  }
+  if (product.isSTier) {
+    metaText += " · 😍";
+  }
+
+  metaDiv.textContent = metaText;
+
   return metaDiv;
 };
 
@@ -347,6 +364,9 @@ const applyFiltersAndSorting = () => {
   const showDeGodsOnly = document.getElementById(
     isMobile ? "mobileProductToggle" : "desktopProductToggle"
   ).checked;
+  const showNewProducts = document.getElementById(
+    isMobile ? "mobileNewProductToggle" : "desktopNewProductToggle"
+  ).checked;
 
   let filteredProducts = allProducts.filter((product) => {
     const categoryMatch =
@@ -362,7 +382,8 @@ const applyFiltersAndSorting = () => {
     const deGodsMatch = showDeGodsOnly
       ? product.isDeGodsProject
       : product.isSTier;
-    return categoryMatch && blockchainMatch && deGodsMatch;
+    const newProductMatch = showNewProducts ? true : !product.isNewProduct;
+    return categoryMatch && blockchainMatch && deGodsMatch && newProductMatch;
   });
 
   if (sortBy === "alphabetical") {
@@ -447,6 +468,12 @@ const addEventListeners = () => {
   document
     .getElementById("desktopProductToggle")
     .addEventListener("change", applyFiltersAndSorting);
+  document
+    .getElementById("mobileNewProductToggle")
+    .addEventListener("change", applyFiltersAndSorting);
+  document
+    .getElementById("desktopNewProductToggle")
+    .addEventListener("change", applyFiltersAndSorting);
 
   window.addEventListener(
     "resize",
@@ -462,6 +489,11 @@ const init = async () => {
     const response = await fetch(CONFIG.CSV_URL);
     const data = await response.text();
     allProducts = parseCSV(data);
+
+    // Set the default state for the toggle to "Products we ❤️"
+    document.getElementById("desktopProductToggle").checked = false;
+    document.getElementById("mobileProductToggle").checked = false;
+
     populateFilterOptions(allProducts);
     applyFiltersAndSorting();
     handleResponsiveLayout();
