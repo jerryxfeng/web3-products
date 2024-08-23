@@ -17,7 +17,7 @@ let allProducts = [];
 // Utility Functions
 const debounce = (func, delay) => {
   let debounceTimer;
-  return function (...args) {
+  return (...args) => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => func.apply(this, args), delay);
   };
@@ -29,23 +29,21 @@ const sanitizeHTML = (str) => {
   return temp.innerHTML;
 };
 
-// Updated function to clean and format URLs
 const formatUrl = (url) => {
   if (!url) return "";
   try {
-    const urlObj = new URL(url);
-    let domain = urlObj.hostname;
-    // Remove 'www.' if present
-    domain = domain.replace(/^www\./, "");
-    // Add path if it exists and is not just '/'
-    if (urlObj.pathname && urlObj.pathname !== "/") {
-      domain += urlObj.pathname;
-    }
-    return domain;
+    const { hostname, pathname } = new URL(url);
+    const domain = hostname.replace(/^www\./, "");
+    return pathname && pathname !== "/" ? `${domain}${pathname}` : domain;
   } catch (e) {
-    // If URL is invalid, return the original string
     return url.replace(/^https?:\/\//, "").split("/")[0];
   }
+};
+
+const extractTwitterUsername = (url) => {
+  if (!url) return null;
+  const { pathname } = new URL(url);
+  return pathname.split("/").filter(Boolean)[0];
 };
 
 // CSV Parsing Functions
@@ -54,7 +52,7 @@ const parseCSVRow = (row) => {
   let inQuotes = false;
   let value = "";
 
-  for (let char of row) {
+  for (const char of row) {
     if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === "," && !inQuotes) {
@@ -112,12 +110,6 @@ const parseCSV = (data) => {
 };
 
 // Display Functions
-const extractTwitterUsername = (url) => {
-  if (!url) return null;
-  const urlObj = new URL(url);
-  return urlObj.pathname.split("/").filter(Boolean)[0];
-};
-
 const createProductElement = (product) => {
   const productDiv = document.createElement("div");
   productDiv.classList.add("product-list-item");
@@ -125,64 +117,112 @@ const createProductElement = (product) => {
     window.open(product.productWebsite, "_blank")
   );
 
-  // Product Logo
-  if (product.productLogo) {
-    const logo = document.createElement("img");
-    logo.src = product.productLogo;
-    logo.loading = "lazy";
-    logo.onerror = () => {
-      logo.src = CONFIG.FALLBACK_IMAGE;
-    };
-    logo.alt = `${product.productName} logo`;
-    logo.classList.add("product-logo");
-    productDiv.appendChild(logo);
-  }
+  const logoImg = createProductLogo(product);
+  if (logoImg) productDiv.appendChild(logoImg);
 
-  // Product Info
+  const infoDiv = createProductInfo(product);
+  productDiv.appendChild(infoDiv);
+
+  return productDiv;
+};
+
+const createProductLogo = (product) => {
+  if (!product.productLogo) return null;
+
+  const logo = document.createElement("img");
+  logo.src = product.productLogo;
+  logo.loading = "lazy";
+  logo.onerror = () => {
+    logo.src = CONFIG.FALLBACK_IMAGE;
+  };
+  logo.alt = `${product.productName} logo`;
+  logo.classList.add("product-logo");
+
+  return logo;
+};
+
+const createProductInfo = (product) => {
   const infoDiv = document.createElement("div");
   infoDiv.classList.add("product-info");
 
-  // Name and Description
-  const nameAndDescription = document.createElement("div");
-  nameAndDescription.classList.add("name-and-description");
+  const nameDescriptionDiv = document.createElement("div");
+  nameDescriptionDiv.classList.add("name-description-founder");
+
+  const titleRow = createTitleRow(product);
+  nameDescriptionDiv.appendChild(titleRow);
+
+  const descriptionFounderContent = createDescriptionFounderContent(product);
+  nameDescriptionDiv.appendChild(descriptionFounderContent);
+
+  infoDiv.appendChild(nameDescriptionDiv);
+
+  const metaDiv = createMetaDiv(product);
+  infoDiv.appendChild(metaDiv);
+
+  const websiteAndTwitterDiv = createWebsiteAndTwitterDiv(product);
+  infoDiv.appendChild(websiteAndTwitterDiv);
+
+  return infoDiv;
+};
+
+const createTitleRow = (product) => {
+  const titleRow = document.createElement("div");
+  titleRow.classList.add("product-title-row");
 
   const nameSpan = document.createElement("span");
   nameSpan.classList.add("product-name");
   nameSpan.textContent = product.productName;
-  nameAndDescription.appendChild(nameSpan);
+  titleRow.appendChild(nameSpan);
 
-  // DeGods Project Badge
   if (product.isDeGodsProject) {
     const deGodsBadge = document.createElement("img");
     deGodsBadge.src = "https://web3-products.vercel.app/degods.png";
     deGodsBadge.alt = "DeGods Project";
     deGodsBadge.classList.add("degods-badge");
-    nameAndDescription.appendChild(deGodsBadge);
+    titleRow.appendChild(deGodsBadge);
   }
+
+  return titleRow;
+};
+
+const createDescriptionFounderContent = (product) => {
+  const descriptionFounderContent = document.createElement("span");
+  descriptionFounderContent.classList.add("product-description-founder");
 
   const descriptionSpan = document.createElement("span");
   descriptionSpan.classList.add("product-description");
-  descriptionSpan.textContent = ` – ${product.productDescription}`;
-  nameAndDescription.appendChild(descriptionSpan);
 
-  // Founder Twitter
+  const desktopDescription = document.createElement("span");
+  desktopDescription.textContent = ` - ${product.productDescription.trim()}`;
+  desktopDescription.style.display = "none";
+  descriptionSpan.appendChild(desktopDescription);
+
+  const mobileDescription = document.createElement("span");
+  mobileDescription.textContent = product.productDescription.trim();
+  mobileDescription.style.display = "none";
+  descriptionSpan.appendChild(mobileDescription);
+
+  descriptionFounderContent.appendChild(descriptionSpan);
+
   if (product.founderTwitter) {
     const username = extractTwitterUsername(product.founderTwitter);
     if (username) {
       const founderSpan = document.createElement("span");
+      founderSpan.classList.add("founder-info");
       founderSpan.innerHTML = `, built by <span class="clickable-tag">@${username}</span>`;
       const founderLink = founderSpan.querySelector(".clickable-tag");
       founderLink.addEventListener("click", (e) => {
         e.stopPropagation();
         window.open(product.founderTwitter, "_blank");
       });
-      nameAndDescription.appendChild(founderSpan);
+      descriptionFounderContent.appendChild(founderSpan);
     }
   }
 
-  infoDiv.appendChild(nameAndDescription);
+  return descriptionFounderContent;
+};
 
-  // Categories and Blockchains
+const createMetaDiv = (product) => {
   const metaDiv = document.createElement("div");
   metaDiv.classList.add("product-meta");
   metaDiv.textContent = `${product.productCategory.join(" · ")} · ${
@@ -190,15 +230,16 @@ const createProductElement = (product) => {
       ? "multichain"
       : product.productBlockchain.join(", ")
   }`;
-  infoDiv.appendChild(metaDiv);
+  return metaDiv;
+};
 
-  // Website and Twitter
+const createWebsiteAndTwitterDiv = (product) => {
   const websiteAndTwitterDiv = document.createElement("div");
   websiteAndTwitterDiv.classList.add("product-meta");
   websiteAndTwitterDiv.innerHTML = `
-      <a href="${
-        product.productWebsite
-      }" class="clickable-tag" target="_blank">${formatUrl(
+    <a href="${
+      product.productWebsite
+    }" class="clickable-tag" target="_blank">${formatUrl(
     product.productWebsite
   )}</a>
   `;
@@ -215,10 +256,7 @@ const createProductElement = (product) => {
     websiteAndTwitterDiv.appendChild(twitterIcon);
   }
 
-  infoDiv.appendChild(websiteAndTwitterDiv);
-  productDiv.appendChild(infoDiv);
-
-  return productDiv;
+  return websiteAndTwitterDiv;
 };
 
 const displayProducts = (products) => {
@@ -227,6 +265,7 @@ const displayProducts = (products) => {
   products.forEach((product) => {
     container.appendChild(createProductElement(product));
   });
+  handleLayoutChange(); // Add this line to update the layout after displaying products
 };
 
 // Filter and Sort Functions
@@ -351,6 +390,24 @@ const handleResponsiveLayout = () => {
   sidebar.style.display = isMobile ? "none" : "block";
 };
 
+const handleLayoutChange = () => {
+  const isMobile = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
+  const desktopDescriptions = document.querySelectorAll(
+    ".product-description span:first-child"
+  );
+  const mobileDescriptions = document.querySelectorAll(
+    ".product-description span:last-child"
+  );
+
+  desktopDescriptions.forEach((desc) => {
+    desc.style.display = isMobile ? "none" : "inline";
+  });
+
+  mobileDescriptions.forEach((desc) => {
+    desc.style.display = isMobile ? "inline" : "none";
+  });
+};
+
 // Event Listeners
 const addEventListeners = () => {
   document
@@ -395,6 +452,8 @@ const addEventListeners = () => {
     "resize",
     debounce(handleResponsiveLayout, CONFIG.DEBOUNCE_DELAY)
   );
+  window.addEventListener("load", handleLayoutChange);
+  window.addEventListener("resize", handleLayoutChange);
 };
 
 // Initialize
@@ -406,6 +465,7 @@ const init = async () => {
     populateFilterOptions(allProducts);
     applyFiltersAndSorting();
     handleResponsiveLayout();
+    handleLayoutChange(); // Add this line to ensure correct initial layout
     addEventListeners();
   } catch (error) {
     console.error("Error fetching CSV data:", error);
