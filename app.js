@@ -214,7 +214,7 @@ const createDescriptionFounderContent = (product) => {
     if (username) {
       const founderSpan = document.createElement("span");
       founderSpan.classList.add("founder-info");
-      founderSpan.innerHTML = `, built by <span class="clickable-tag">@${username}</span>`;
+      founderSpan.innerHTML = `, being built by <span class="clickable-tag">@${username}</span>`;
       const founderLink = founderSpan.querySelector(".clickable-tag");
       founderLink.addEventListener("click", (e) => {
         e.stopPropagation();
