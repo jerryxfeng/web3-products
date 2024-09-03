@@ -15,6 +15,26 @@ const CONFIG = {
 // State
 let allProducts = [];
 
+// Array of tweet URLs
+const tweetUrls = [
+  "https://twitter.com/Ukkometa/status/1829861298554986639",
+  "https://twitter.com/thebasedbob/status/1829740958667190369",
+  "https://twitter.com/Plaxtico_/status/1829729977656303937",
+  "https://twitter.com/billmartin98/status/1830294184764625113",
+  "https://twitter.com/Cooopahtroopa/status/1829038178109714769",
+  "https://twitter.com/jerryxfeng/status/1828620467298771142",
+  "https://twitter.com/jerryxfeng/status/1828608406413803780",
+  "https://twitter.com/SolJakey/status/1828291490835059113",
+  "https://twitter.com/jerryxfeng/status/1828164868966621276",
+  "https://twitter.com/jerryxfeng/status/1827866290327101820",
+  "https://twitter.com/saskasandholm/status/1827296861192958390",
+  "https://twitter.com/jerryxfeng/status/1826920413919863246",
+  "https://twitter.com/jerryxfeng/status/1826899053013336386",
+  "https://twitter.com/jerryxfeng/status/1826897353665904997",
+  "https://twitter.com/frankdegods/status/1825840697355940173",
+  "https://twitter.com/pastagotsauce/status/1825857018202116441",
+];
+
 // Utility Functions
 const debounce = (func, delay) => {
   let debounceTimer;
@@ -282,7 +302,7 @@ const displayProducts = (products) => {
   products.forEach((product) => {
     container.appendChild(createProductElement(product));
   });
-  handleLayoutChange(); // Add this line to update the layout after displaying products
+  handleLayoutChange();
 };
 
 // Filter and Sort Functions
@@ -424,10 +444,12 @@ const toggleMobileFilterSection = () => {
 const handleResponsiveLayout = () => {
   const isMobile = window.innerWidth < CONFIG.MOBILE_BREAKPOINT;
   const mobileFilterSection = document.querySelector(".mobile-filter-section");
-  const sidebar = document.querySelector(".sidebar");
+  const leftSidebar = document.querySelector(".left-sidebar");
+  const rightSidebar = document.querySelector(".right-sidebar");
 
   mobileFilterSection.style.display = isMobile ? "none" : "none";
-  sidebar.style.display = isMobile ? "none" : "block";
+  leftSidebar.style.display = isMobile ? "none" : "block";
+  rightSidebar.style.display = isMobile ? "none" : "block";
 };
 
 const handleLayoutChange = () => {
@@ -447,6 +469,27 @@ const handleLayoutChange = () => {
     desc.style.display = isMobile ? "inline" : "none";
   });
 };
+
+// Function to load tweets
+function loadTweets() {
+  const tweetContainer = document.getElementById("tweet-container");
+  tweetContainer.innerHTML = ""; // Clear existing tweets
+
+  tweetUrls.forEach((url) => {
+    const tweetElement = document.createElement("div");
+    tweetElement.className = "tweet";
+    tweetContainer.appendChild(tweetElement);
+
+    twttr.widgets.createTweet(
+      url.split("/").pop(), // Extract tweet ID from URL
+      tweetElement,
+      {
+        align: "center",
+        width: "100%",
+      }
+    );
+  });
+}
 
 // Event Listeners
 const addEventListeners = () => {
@@ -521,10 +564,17 @@ const init = async () => {
     document.getElementById("sortFilter").value = "recent";
 
     populateFilterOptions(allProducts);
-    applyFiltersAndSorting(); // Apply filters and sorting with the default sort as "recently added"
+    applyFiltersAndSorting();
     handleResponsiveLayout();
-    handleLayoutChange(); // Add this line to ensure correct initial layout
+    handleLayoutChange();
     addEventListeners();
+
+    // Load tweets after Twitter widgets script is ready
+    if (window.twttr) {
+      twttr.ready(loadTweets);
+    } else {
+      console.error("Twitter widget script not loaded");
+    }
   } catch (error) {
     console.error("Error fetching CSV data:", error);
   }
