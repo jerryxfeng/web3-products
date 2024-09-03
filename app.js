@@ -470,8 +470,32 @@ const handleLayoutChange = () => {
   });
 };
 
-// Function to load tweets
+// Add this constant for the featured tweet
+const FEATURED_TWEET_URL =
+  "https://twitter.com/jerryxfeng/status/1829327040857960599";
+
+// Modify the loadTweets function to handle the featured tweet
 function loadTweets() {
+  // Load featured tweet
+  const featuredTweetContainer = document.getElementById(
+    "featured-tweet-container"
+  );
+  featuredTweetContainer.innerHTML = ""; // Clear existing content
+
+  const featuredTweetElement = document.createElement("div");
+  featuredTweetElement.className = "featured-tweet";
+  featuredTweetContainer.appendChild(featuredTweetElement);
+
+  twttr.widgets.createTweet(
+    FEATURED_TWEET_URL.split("/").pop(),
+    featuredTweetElement,
+    {
+      align: "center",
+      width: "100%",
+    }
+  );
+
+  // Load regular tweets
   const tweetContainer = document.getElementById("tweet-container");
   tweetContainer.innerHTML = ""; // Clear existing tweets
 
@@ -480,14 +504,10 @@ function loadTweets() {
     tweetElement.className = "tweet";
     tweetContainer.appendChild(tweetElement);
 
-    twttr.widgets.createTweet(
-      url.split("/").pop(), // Extract tweet ID from URL
-      tweetElement,
-      {
-        align: "center",
-        width: "100%",
-      }
-    );
+    twttr.widgets.createTweet(url.split("/").pop(), tweetElement, {
+      align: "center",
+      width: "100%",
+    });
   });
 }
 

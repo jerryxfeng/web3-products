@@ -778,14 +778,6 @@ button {
     /* Remove top padding */
 }
 
-.tweet-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 0.625rem;
-    /* Add some space between header and tweets */
-}
-
 /* Ensure consistent padding for both sidebars */
 .sidebar {
     padding: 1.25rem;
@@ -798,10 +790,22 @@ button {
     padding-top: 0;
 }
 
+/* Styles for the featured tweet */
+.featured-tweet-container {
+    margin-bottom: 1.5rem;
+}
+
+.featured-tweet {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1rem;
+}
+
+/* Adjust the existing tweet container styles */
 .tweet-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-top: 0.625rem;
 }
 
 /* Responsive layout adjustments */
