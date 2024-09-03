@@ -120,36 +120,29 @@
       </div>
     </header>
     <div class="mobile-filter-section">
-      <div class="toggle-container">
-        <span class="toggle-label">😍 products</span>
-        <label class="switch">
-          <input type="checkbox" id="mobileProductToggle" checked />
-          <span class="slider round"></span>
-        </label>
-        <span class="toggle-label">
-          Built by
-          <img
-            src="https://web3-products.vercel.app/degods-wordmark-small.png"
-            alt="DeGods"
-            class="degods-wordmark-small"
-          />
-        </span>
-      </div>
-      <div class="toggle-description-container">
-        <p class="toggle-description">
-          😍 = we love this product & use it a lot
-        </p>
+      <div class="filter-section">
+        <h3>Filter for</h3>
+        <div class="filter-checkboxes">
+          <input type="checkbox" id="sTierFilter" />
+          <label for="sTierFilter">😍 products we love</label>
+        </div>
+        <div class="filter-checkboxes">
+          <input type="checkbox" id="deGodsFilter" />
+          <label for="deGodsFilter">
+            <img
+              src="https://web3-products.vercel.app/degods.png"
+              alt="DeGods"
+              class="degods-wordmark-small"
+            />
+            built by DeGods
+          </label>
+        </div>
+        <div class="filter-checkboxes">
+          <input type="checkbox" id="mobileNewProductToggle" />
+          <label for="mobileNewProductToggle">🆕 recently launched/WIP</label>
+        </div>
       </div>
       <hr class="divider-line" />
-      <div class="new-product-title">
-        <h3>Show new products?</h3>
-      </div>
-      <div class="new-product-filter">
-        <input type="checkbox" id="mobileNewProductToggle" checked />
-        <label for="mobileNewProductToggle"
-          >show 🆕 products that recently launched or are still WIP</label
-        >
-      </div>
       <div class="sort-section">
         <h3>Sort by</h3>
         <select id="sortFilter" aria-label="Sort products">
@@ -169,38 +162,33 @@
     <div class="container">
       <aside class="sidebar">
         <nav>
-          <div class="toggle-container">
-            <span class="toggle-label">😍 products</span>
-            <label class="switch">
-              <input type="checkbox" id="desktopProductToggle" checked />
-              <span class="slider round"></span>
-            </label>
-            <span class="toggle-label">
-              Built by
-              <img
-                src="https://web3-products.vercel.app/degods-wordmark-small.png"
-                alt="DeGods"
-                class="degods-wordmark-small"
-              />
-            </span>
-          </div>
-          <div class="toggle-description-container">
-            <p class="toggle-description">
-              😍 = we love this product & use it a lot
-            </p>
-          </div>
-          <hr class="divider-line" />
           <div class="checkbox-container">
             <div class="new-product-title">
-              <h3>Show new products?</h3>
+              <h3>Filter for</h3>
             </div>
-            <div class="new-product-filter">
-              <input type="checkbox" id="desktopNewProductToggle" checked />
+            <div class="filter-checkboxes">
+              <input type="checkbox" id="desktopSTierFilter" />
+              <label for="desktopSTierFilter">😍 products we love</label>
+            </div>
+            <div class="filter-checkboxes">
+              <input type="checkbox" id="desktopDeGodsFilter" />
+              <label for="desktopDeGodsFilter">
+                <img
+                  src="https://web3-products.vercel.app/degods.png"
+                  alt="DeGods"
+                  class="degods-wordmark-small"
+                />
+                built by DeGods
+              </label>
+            </div>
+            <div class="filter-checkboxes">
+              <input type="checkbox" id="desktopNewProductToggle" />
               <label for="desktopNewProductToggle">
-                show 🆕 products that recently launched or are still WIP
+                🆕 recently launched/WIP
               </label>
             </div>
           </div>
+          <hr class="divider-line" />
           <div class="checkbox-container">
             <div class="sort-section">
               <h3>Sort by</h3>

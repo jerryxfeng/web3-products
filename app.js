@@ -343,47 +343,66 @@ const populateFilterOptions = (products) => {
 };
 
 const applyFiltersAndSorting = () => {
-  const isMobile = window.innerWidth < CONFIG.MOBILE_BREAKPOINT;
+  const sortBy = document.getElementById(
+    window.innerWidth < CONFIG.MOBILE_BREAKPOINT
+      ? "sortFilter"
+      : "desktopSortFilter"
+  ).value;
+
+  const showSTierProducts =
+    document.getElementById("sTierFilter").checked ||
+    document.getElementById("desktopSTierFilter").checked;
+  const showDeGodsProducts =
+    document.getElementById("deGodsFilter").checked ||
+    document.getElementById("desktopDeGodsFilter").checked;
+  const showNewProductsOnly =
+    document.getElementById("mobileNewProductToggle").checked ||
+    document.getElementById("desktopNewProductToggle").checked;
+
+  // Get selected categories
   const selectedCategories = Array.from(
     document.querySelectorAll(
-      isMobile
+      window.innerWidth < CONFIG.MOBILE_BREAKPOINT
         ? ".category-checkbox:checked"
         : ".desktop-category-checkbox:checked"
     )
   ).map((checkbox) => checkbox.value);
+
+  // Get selected blockchains
   const selectedBlockchains = Array.from(
     document.querySelectorAll(
-      isMobile
+      window.innerWidth < CONFIG.MOBILE_BREAKPOINT
         ? ".blockchain-checkbox:checked"
         : ".desktop-blockchain-checkbox:checked"
     )
   ).map((checkbox) => checkbox.value);
-  const sortBy = document.getElementById(
-    isMobile ? "sortFilter" : "desktopSortFilter"
-  ).value;
-  const showDeGodsOnly = document.getElementById(
-    isMobile ? "mobileProductToggle" : "desktopProductToggle"
-  ).checked;
-  const showNewProducts = document.getElementById(
-    isMobile ? "mobileNewProductToggle" : "desktopNewProductToggle"
-  ).checked;
 
   let filteredProducts = allProducts.filter((product) => {
-    const categoryMatch =
+    const matchesSTier = showSTierProducts ? product.isSTier : true;
+    const matchesDeGods = showDeGodsProducts ? product.isDeGodsProject : true;
+    const matchesNewProducts = showNewProductsOnly
+      ? product.isNewProduct
+      : true;
+
+    const matchesCategory =
       selectedCategories.length === 0 ||
-      product.productCategory.some((category) =>
-        selectedCategories.includes(category)
+      selectedCategories.some((category) =>
+        product.productCategory.includes(category)
       );
-    const blockchainMatch =
+
+    const matchesBlockchain =
       selectedBlockchains.length === 0 ||
-      product.productBlockchain.some((blockchain) =>
-        selectedBlockchains.includes(blockchain)
+      selectedBlockchains.some((blockchain) =>
+        product.productBlockchain.includes(blockchain)
       );
-    const deGodsMatch = showDeGodsOnly
-      ? product.isDeGodsProject
-      : product.isSTier;
-    const newProductMatch = showNewProducts ? true : !product.isNewProduct;
-    return categoryMatch && blockchainMatch && deGodsMatch && newProductMatch;
+
+    return (
+      matchesSTier &&
+      matchesDeGods &&
+      matchesNewProducts &&
+      matchesCategory &&
+      matchesBlockchain
+    );
   });
 
   if (sortBy === "alphabetical") {
@@ -463,11 +482,18 @@ const addEventListeners = () => {
   });
 
   document
-    .getElementById("mobileProductToggle")
+    .getElementById("sTierFilter")
     .addEventListener("change", applyFiltersAndSorting);
   document
-    .getElementById("desktopProductToggle")
+    .getElementById("desktopSTierFilter")
     .addEventListener("change", applyFiltersAndSorting);
+  document
+    .getElementById("deGodsFilter")
+    .addEventListener("change", applyFiltersAndSorting);
+  document
+    .getElementById("desktopDeGodsFilter")
+    .addEventListener("change", applyFiltersAndSorting);
+
   document
     .getElementById("mobileNewProductToggle")
     .addEventListener("change", applyFiltersAndSorting);
@@ -489,10 +515,6 @@ const init = async () => {
     const response = await fetch(CONFIG.CSV_URL);
     const data = await response.text();
     allProducts = parseCSV(data);
-
-    // Set the default state for the toggle to "Products we ❤️"
-    document.getElementById("desktopProductToggle").checked = false;
-    document.getElementById("mobileProductToggle").checked = false;
 
     // Set the default sort to "Recently added"
     document.getElementById("desktopSortFilter").value = "recent";
