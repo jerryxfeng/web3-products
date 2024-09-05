@@ -17,6 +17,7 @@ let allProducts = [];
 
 // Array of tweet URLs
 const tweetUrls = [
+  "https://twitter.com/LeonardMainnet/status/1831361011343040549",
   "https://twitter.com/Ukkometa/status/1829861298554986639",
   "https://twitter.com/thebasedbob/status/1829740958667190369",
   "https://twitter.com/Plaxtico_/status/1829729977656303937",
@@ -30,7 +31,6 @@ const tweetUrls = [
   "https://twitter.com/saskasandholm/status/1827296861192958390",
   "https://twitter.com/jerryxfeng/status/1826920413919863246",
   "https://twitter.com/jerryxfeng/status/1826899053013336386",
-  "https://twitter.com/jerryxfeng/status/1826897353665904997",
   "https://twitter.com/frankdegods/status/1825840697355940173",
   "https://twitter.com/pastagotsauce/status/1825857018202116441",
 ];
