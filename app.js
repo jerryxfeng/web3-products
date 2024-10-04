@@ -17,6 +17,9 @@ let allProducts = [];
 
 // Array of tweet URLs
 const tweetUrls = [
+  "https://x.com/Draft_Fi/status/1841165505463533748",
+  "https://x.com/macdegods/status/1841145337420882276",
+  "https://x.com/DeGodsNFT/status/1841144071517089844",
   "https://twitter.com/LeonardMainnet/status/1831361011343040549",
   "https://twitter.com/Ukkometa/status/1829861298554986639",
   "https://twitter.com/thebasedbob/status/1829740958667190369",
@@ -472,7 +475,7 @@ const handleLayoutChange = () => {
 
 // Add this constant for the featured tweet
 const FEATURED_TWEET_URL =
-  "https://twitter.com/jerryxfeng/status/1829327040857960599";
+  "https://x.com/jerryxfeng/status/1842004627946086731";
 
 // Modify the loadTweets function to handle the featured tweet
 function loadTweets() {
